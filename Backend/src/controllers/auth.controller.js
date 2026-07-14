@@ -41,8 +41,7 @@ const register = asyncHandler(async (req, res) => {
     username,
     fullName,
     email,
-    password,
-    role: "admin",
+    password
   });
 
   const { unHashedToken, HashedToken, tokenExpiry } =

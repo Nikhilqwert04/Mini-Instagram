@@ -69,10 +69,11 @@ const userResetForgotPasswordValidator = ()=>{
 const postCreatingValidator = ()=>{
     return [
         body('description')
-        .trim().notEmpty().withMessage("Description Should not be Empty")
+        .trim().notEmpty().withMessage("Description Should not be Empty"),
+
     ]
 }
 
 
 
-export { userRegisterValidator, userLoginValidator, userChangedCurrentPasswordValidator,userForgotPasswordValidator,userResetForgotPasswordValidator};
+export { userRegisterValidator, userLoginValidator, userChangedCurrentPasswordValidator,userForgotPasswordValidator,userResetForgotPasswordValidator, postCreatingValidator};
