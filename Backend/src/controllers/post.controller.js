@@ -50,7 +50,7 @@ const userAllPost = asyncHandler(async (req, res) => {
 
   const Allpost = await Post.find({
     userId: user._id,
-  }).select("-_id -userId -imageKitFileId");
+  }).select("-imageKitFileId");
 
   if (!Allpost) {
     throw new ApiError(404, "No images found for this user");
@@ -59,7 +59,7 @@ const userAllPost = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { Allpost }, "All User Images Fetched Successfully"),
+      new ApiResponse(200, { Allpost }, "User All Images Fetched Successfully"),
     );
 });
 
@@ -67,13 +67,101 @@ const AllUser = asyncHandler(async (req, res) => {
   const AllUser = await User.find({ role: UserRolesEnum.USER }).select(
     "-_id -password -isEmailVerified -isEmailVerified -refreshtoken -verificationToken -verificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry -isBlocked -role",
   );
-  
-  return res.status(200)
-  .json(new ApiResponse(200,AllUser,"All User Fetch Susccessfully"))
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, AllUser, "All User Fetch Susccessfully"));
 });
 
 const otherUserPost = asyncHandler(async (req, res) => {
-  //test
+  const { username } = req.params;
+  const user = req.user;
+
+  if (username === user.username) {
+    return userAllPost(req, res);
+  }
+
+  const otherUser = await User.findOne({ username });
+
+  if (!otherUser) {
+    throw new ApiError(404, "User Not Found");
+  }
+
+  const otherUserPost = await Post.find({
+    visibility: "public",
+    userId: otherUser._id,
+  }).select("-_id -userId -imageKitFileId -visibility");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { otherUserPost }, "User Post Fetched Successfully"),
+    );
 });
 
-export { createPost, userAllPost, otherUserPost, AllUser };
+const deletePost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const user = req.user;
+
+  const matchingPostId = await Post.findById(postId);
+
+  if (!matchingPostId) {
+    throw new ApiError(404, "No post found");
+  }
+
+  if (!matchingPostId.userId.equals(user._id)) {
+    throw new ApiError(403, "Unauthorized Access");
+  }
+
+  const thatPost = await Post.findByIdAndDelete(postId);
+
+  if (!thatPost) {
+    throw new ApiError(404, "Post not Found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, thatPost, "Post Deleted Successfully"));
+});
+
+const editPost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { description, visibility } = req.body;
+  const user = req.user;
+
+  const matchingPostId = await Post.findById(postId);
+
+  if (!matchingPostId) {
+    throw new ApiError(404, "No post found");
+  }
+
+  if (!matchingPostId.userId.equals(user._id)) {
+    throw new ApiError(403, "Unauthorized Access");
+  }
+
+  const thatPost = await Post.findByIdAndUpdate(
+    postId,
+    {
+      $set: {
+        description: description,
+        visibility: visibility,
+      },
+    },
+    { new: true },
+  );
+  if (!thatPost) {
+    throw new ApiError(404, "Cannot update the post");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, thatPost, "Post Updated Successfully"));
+});
+export {
+  createPost,
+  userAllPost,
+  otherUserPost,
+  AllUser,
+  deletePost,
+  editPost,
+};

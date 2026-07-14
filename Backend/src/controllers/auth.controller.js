@@ -327,7 +327,9 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(req.user._id, { $set: { refreshtoken: "" } }, { new: true })
+    const user=await User.findByIdAndUpdate(req.user._id, { $set: { refreshtoken: "" } }, { new: true }).select(
+    "-_id -password -isEmailVerified -isEmailVerified -refreshtoken -verificationToken -verificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry -isBlocked -role -email -fullName",
+  );
 
     const options = {
         httpOnly: true,
@@ -338,7 +340,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie("Access_Token", options)
         .clearCookie("Refresh_Token", options)
         .json(
-            new ApiResponse(200, {}, "User loogged Out")
+            new ApiResponse(200, {user}, "User loogged Out")
         )
 
 
