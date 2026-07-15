@@ -3,9 +3,19 @@ import ApiError from "../utils/api-error.js";
 import asyncHandler from "../utils/async-handler.js";
 import jwt from "jsonwebtoken";
 
-const verifyJWT = asyncHandler(async (req, res, next) => {
+const verifyUser = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  console.log(user.role);
+  if (user.role !== "admin") {
+    throw new ApiError(400, "Unotherized Access");
+  }
+
+  next();
+});
+
+const verifyAdminJWT = asyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.Access_Token ||
+    req.cookies?.Admin_Access_Token ||
     req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
@@ -27,6 +37,4 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
   }
 });
 
-
-
-export default verifyJWT
+export { verifyUser, verifyAdminJWT };

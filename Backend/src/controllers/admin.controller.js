@@ -44,8 +44,8 @@ const adminLogin = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("Refresh_Token", refreshToken, option)
-    .cookie("Access_Token", accessToken, option)
+    .cookie("Admin_Refresh_Token", refreshToken, option)
+    .cookie("Admin_Access_Token", accessToken, option)
     .json(
       new ApiResponse(
         200,
@@ -70,4 +70,25 @@ const adminDashBoard = asyncHandler(async (req,res)=>{
 
 })
 
-export { adminLogin,adminDashBoard };
+const logoutAdmin = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { refreshtoken: "" } },
+    { new: true },
+  ).select(
+    "-_id -password -isEmailVerified -isEmailVerified -refreshtoken -verificationToken -verificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry -isBlocked -role -email -fullName",
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("Admin_Access_Token", options)
+    .clearCookie("Admin_Refresh_Token", options)
+    .json(new ApiResponse(200, { user }, "User loogged Out"));
+});
+
+export { adminLogin,adminDashBoard,logoutAdmin };

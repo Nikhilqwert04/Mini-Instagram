@@ -19,7 +19,7 @@ import {
   userRegisterValidator,
   userResetForgotPasswordValidator,
 } from "../validates/validate.midd.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import  verifyJWT  from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.route("/register").post(userRegisterValidator(), validate, register);

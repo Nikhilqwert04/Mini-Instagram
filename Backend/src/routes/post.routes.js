@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {verifyJWT} from "../middlewares/auth.middleware.js";
+import verifyJWT from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import {AllUser, createPost, deletePost, editPost, otherUserPost, SearchUser, userAllPost} from "../controllers/post.controller.js"
 import {postCreatingValidator} from "../validates/validate.midd.js";
