@@ -81,7 +81,7 @@ const otherUserPost = asyncHandler(async (req, res) => {
     return userAllPost(req, res);
   }
 
-  const otherUser = await User.findOne({ username });
+  const otherUser = await User.findOne({ username }).select("fullName, username email");
 
   if (!otherUser) {
     throw new ApiError(404, "User Not Found");
@@ -95,7 +95,7 @@ const otherUserPost = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { otherUserPost }, "User Post Fetched Successfully"),
+      new ApiResponse(200, { otherUser,otherUserPost }, "User Post Fetched Successfully"),
     );
 });
 
@@ -169,7 +169,7 @@ const SearchUser = asyncHandler(async (req, res) => {
       $regex: q,
       $options: "i",
     },
-  }).select("-password -refreshToken");
+  }).select("fullName email username -_id");
 
   return res
     .status(200)
