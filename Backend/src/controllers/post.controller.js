@@ -157,6 +157,24 @@ const editPost = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, thatPost, "Post Updated Successfully"));
 });
+
+const SearchUser = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    throw new ApiError(400, "Search query is required");
+  }
+
+  const SelectedUsers = await User.find({
+    username: {
+      $regex: q,
+      $options: "i",
+    },
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, SelectedUsers, "Users searched successfully"));
+});
 export {
   createPost,
   userAllPost,
@@ -164,4 +182,5 @@ export {
   AllUser,
   deletePost,
   editPost,
+  SearchUser,
 };

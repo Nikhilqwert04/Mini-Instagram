@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import ApiError from "../utils/api-error.js";
 import asyncHandler from "../utils/async-handler.js";
 import jwt from "jsonwebtoken";
+import { UserRolesEnum } from "../utils/constants.js";
 
 const verifyJWT = asyncHandler(async (req,res,next)=>{
     const token = req.cookies?.Access_Token || req.header("Authorization")?.replace("Bearer ", "")
@@ -24,4 +25,13 @@ const verifyJWT = asyncHandler(async (req,res,next)=>{
     }
 })
 
-export default verifyJWT
+const verifyUser = asyncHandler(async (req,res,next)=>{
+    const user = req.user
+    if(user.role !== UserRolesEnum.ADMIN){
+        throw new ApiError(400,"Unotherized Access")
+    }
+
+    next()
+})
+
+export  {verifyJWT,verifyUser}
