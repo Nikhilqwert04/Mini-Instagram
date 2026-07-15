@@ -4,7 +4,7 @@ import connectdb from "./src/db/db.js";
 
 connectdb()
     .then(() => {
-        app.listen(3000, () => {
+        app.listen(process.env.PORT, () => {
             console.log("Server is Running on port 3000")
         })
 
