@@ -56,20 +56,23 @@ const adminLogin = asyncHandler(async (req, res) => {
     );
 });
 
-const adminDashBoard = asyncHandler(async (req,res)=>{
+const adminDashBoard = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments({ role: UserRolesEnum.USER });
+  const totalposts = await Post.countDocuments();
+  const blockedUser = await User.countDocuments({
+    isBlocked: true,
+  });
 
-  const totalUsers = await User.countDocuments({role:UserRolesEnum.USER})
-  const totalposts = await Post.countDocuments()
-  const blockedUser =await User.countDocuments({
-    isBlocked:true
-  })
-
-
-  return res.status(200)
-  .json(new ApiResponse(200,{totalUsers,totalposts,blockedUser},"Data Fetched Successfully"))
-
-
-})
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { totalUsers, totalposts, blockedUser },
+        "Data Fetched Successfully",
+      ),
+    );
+});
 
 const logoutAdmin = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
@@ -100,7 +103,9 @@ const AdminotherUserPost = asyncHandler(async (req, res) => {
     return userAllPost(req, res);
   }
 
-  const otherUser = await User.findOne({ username }).select("fullName username email");
+  const otherUser = await User.findOne({ username }).select(
+    "fullName username email",
+  );
 
   if (!otherUser) {
     throw new ApiError(404, "User Not Found");
@@ -113,44 +118,104 @@ const AdminotherUserPost = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { otherUser,otherUserPost }, "User Post Fetched Successfully"),
+      new ApiResponse(
+        200,
+        { otherUser, otherUserPost },
+        "User Post Fetched Successfully",
+      ),
     );
 });
 
-const blockUser = asyncHandler(async (req,res)=>{
-  const {username} = req.params
+const blockUser = asyncHandler(async (req, res) => {
+  const { username } = req.params;
 
-  if(!username){
-    throw new ApiError(400, "User not Selected")
+  if (!username) {
+    throw new ApiError(400, "User not Selected");
   }
 
-  const UserBlock = await User.findOneAndUpdate({username:username}, {isBlocked:true},{new:true}).select("username fullName")
+  const UserBlock = await User.findOneAndUpdate(
+    { username: username },
+    { isBlocked: true },
+    { new: true },
+  ).select("username fullName");
 
-  if(!UserBlock){
-    throw new ApiError(400,"Can not Block the user") 
+  if (!UserBlock) {
+    throw new ApiError(400, "Can not Block the user");
   }
 
-  return res.status(200)
-  .json(new ApiResponse(200,{UserBlock},"User Blocked Successfully"))
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { UserBlock }, "User Blocked Successfully"));
+});
 
-const unblockUser = asyncHandler(async (req,res)=>{
-  const {username} = req.params
+const unblockUser = asyncHandler(async (req, res) => {
+  const { username } = req.params;
 
-    if(!username){
-    throw new ApiError(400, "User not Selected")
+  if (!username) {
+    throw new ApiError(400, "User not Selected");
   }
 
-  const UserBlock = await User.findOneAndUpdate({username:username}, {isBlocked:false},{new:true}).select("username fullName")
+  const UserBlock = await User.findOneAndUpdate(
+    { username: username },
+    { isBlocked: false },
+    { new: true },
+  ).select("username fullName");
 
-  if(!UserBlock){
-    throw new ApiError(400,"Can not unBlock the user") 
+  if (!UserBlock) {
+    throw new ApiError(400, "Can not unBlock the user");
   }
 
-  return res.status(200)
-  .json(new ApiResponse(200,{UserBlock},"User UnBlocked Successfully"))
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { UserBlock }, "User UnBlocked Successfully"));
+});
 
+const UserNameandPostCount = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments({ role: UserRolesEnum.USER });
+  const totalposts = await Post.countDocuments();
+  const AllUserNmandCoun = await User.aggregate([
+    {
+      $lookup: {
+        from: "posts",
+        localField: "_id",
+        foreignField: "userId",
+        as: "AllPost",
+      },
+    },
+    {
+      $unwind: {
+        path: "$AllPost",
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        username: {
+          $first: "$username",
+        },
+        postcount: {
+          $sum: 1,
+        },
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { totalUsers, totalposts, AllUserNmandCoun },
+        "User All names and User Post Fetched Successfully",
+      ),
+    );
+});
 
-
-export { adminLogin,adminDashBoard,logoutAdmin,AdminotherUserPost,blockUser,unblockUser};
+export {
+  adminLogin,
+  adminDashBoard,
+  logoutAdmin,
+  AdminotherUserPost,
+  blockUser,
+  unblockUser,
+  UserNameandPostCount,
+};
