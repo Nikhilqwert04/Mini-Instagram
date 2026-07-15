@@ -55,4 +55,19 @@ const adminLogin = asyncHandler(async (req, res) => {
     );
 });
 
-export { adminLogin };
+const adminDashBoard = asyncHandler(async (req,res)=>{
+
+  const totalUsers = await User.countDocuments({role:UserRolesEnum.USER})
+  const totalposts = await Post.countDocuments()
+  const blockedUser =await User.countDocuments({
+    isBlocked:true
+  })
+
+
+  return res.status(200)
+  .json(new ApiResponse(200,{totalUsers,totalposts,blockedUser},"Data Fetched Successfully"))
+
+
+})
+
+export { adminLogin,adminDashBoard };
