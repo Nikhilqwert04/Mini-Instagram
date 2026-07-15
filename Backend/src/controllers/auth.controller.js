@@ -3,6 +3,7 @@ import ApiResponse from "../utils/api-response.js";
 import asyncHandler from "../utils/async-handler.js";
 import User from "../models/user.model.js";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import {
   sendMail,
   emailVerificationMailGenContent,
@@ -41,7 +42,7 @@ const register = asyncHandler(async (req, res) => {
     username,
     fullName,
     email,
-    password
+    password,
   });
 
   const { unHashedToken, HashedToken, tokenExpiry } =
@@ -261,7 +262,8 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookies.Refresh_Token || req.body.refreshToken;
+  const incomingRefreshToken =
+    req.cookies.Refresh_Token || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
     throw new ApiError(400, "Invalid Refresh Token");
@@ -304,47 +306,49 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         ),
       );
   } catch (err) {
-    throw new ApiError(401, "Invalid refresh token");
+    console.error("Refresh token error:", err);
+    throw new ApiError(401, err?.message || "Invalid refresh token");
   }
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const {oldPassword, newPassword} = req.body
-    const user = await User.findById(req.user?._id)
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
 
-    const isPasswordValid = await user.isPasswordCorrect(oldPassword)
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
 
-    if(!isPasswordValid){
-        throw new ApiError(400,"Invalid old password")
-    }
+  if (!isPasswordValid) {
+    throw new ApiError(400, "Invalid old password");
+  }
 
-    user.password = newPassword
-    await user.save({validateBeforeSave:false})
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
 
-    return res.status(200)
-    .json(new ApiResponse(200,{},"Password Changes Successfully"))
-    
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password Changes Successfully"));
+});
 
 const logoutUser = asyncHandler(async (req, res) => {
-    const user=await User.findByIdAndUpdate(req.user._id, { $set: { refreshtoken: "" } }, { new: true }).select(
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { refreshtoken: "" } },
+    { new: true },
+  ).select(
     "-_id -password -isEmailVerified -isEmailVerified -refreshtoken -verificationToken -verificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry -isBlocked -role -email -fullName",
   );
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
 
-    return res.status(200)
-        .clearCookie("Access_Token", options)
-        .clearCookie("Refresh_Token", options)
-        .json(
-            new ApiResponse(200, {user}, "User loogged Out")
-        )
-
-
-})
+  return res
+    .status(200)
+    .clearCookie("Access_Token", options)
+    .clearCookie("Refresh_Token", options)
+    .json(new ApiResponse(200, { user }, "User loogged Out"));
+});
 
 export {
   register,
@@ -355,5 +359,6 @@ export {
   resendEmailVerification,
   refreshAccessToken,
   changeCurrentPassword,
-  logoutUser
+  logoutUser,
+  genrateAccessAndRefreshToken,
 };
