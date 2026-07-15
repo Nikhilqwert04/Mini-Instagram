@@ -7,6 +7,7 @@ import { uploadFile } from "../services/imagekit.service.js";
 import mongoose from "mongoose";
 import { UserRolesEnum } from "../utils/constants.js";
 import { genrateAccessAndRefreshToken } from "./auth.controller.js";
+import { userAllPost } from "./post.controller.js";
 
 const adminLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -91,4 +92,65 @@ const logoutAdmin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user }, "User loogged Out"));
 });
 
-export { adminLogin,adminDashBoard,logoutAdmin };
+const AdminotherUserPost = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+  const user = req.user;
+
+  if (username === user.username) {
+    return userAllPost(req, res);
+  }
+
+  const otherUser = await User.findOne({ username }).select("fullName username email");
+
+  if (!otherUser) {
+    throw new ApiError(404, "User Not Found");
+  }
+
+  const otherUserPost = await Post.find({
+    userId: otherUser._id,
+  }).select("-_id -userId -imageKitFileId -visibility");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { otherUser,otherUserPost }, "User Post Fetched Successfully"),
+    );
+});
+
+const blockUser = asyncHandler(async (req,res)=>{
+  const {username} = req.params
+
+  if(!username){
+    throw new ApiError(400, "User not Selected")
+  }
+
+  const UserBlock = await User.findOneAndUpdate({username:username}, {isBlocked:true},{new:true}).select("username fullName")
+
+  if(!UserBlock){
+    throw new ApiError(400,"Can not Block the user") 
+  }
+
+  return res.status(200)
+  .json(new ApiResponse(200,{UserBlock},"User Blocked Successfully"))
+})
+
+const unblockUser = asyncHandler(async (req,res)=>{
+  const {username} = req.params
+
+    if(!username){
+    throw new ApiError(400, "User not Selected")
+  }
+
+  const UserBlock = await User.findOneAndUpdate({username:username}, {isBlocked:false},{new:true}).select("username fullName")
+
+  if(!UserBlock){
+    throw new ApiError(400,"Can not unBlock the user") 
+  }
+
+  return res.status(200)
+  .json(new ApiResponse(200,{UserBlock},"User UnBlocked Successfully"))
+})
+
+
+
+export { adminLogin,adminDashBoard,logoutAdmin,AdminotherUserPost,blockUser,unblockUser};
