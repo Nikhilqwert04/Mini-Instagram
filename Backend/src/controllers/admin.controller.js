@@ -3,8 +3,6 @@ import ApiResponse from "../utils/api-response.js";
 import asyncHandler from "../utils/async-handler.js";
 import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
-import { uploadFile } from "../services/imagekit.service.js";
-import mongoose from "mongoose";
 import { UserRolesEnum } from "../utils/constants.js";
 import { genrateAccessAndRefreshToken } from "./auth.controller.js";
 import { userAllPost } from "./post.controller.js";
