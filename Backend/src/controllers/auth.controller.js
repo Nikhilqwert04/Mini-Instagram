@@ -91,6 +91,15 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Password is wrong");
   }
 
+  const token =
+    req.cookies?.Admin_Access_Token || req.cookies?.Access_Token ||
+    req.header("Authorization")?.replace("Bearer ", "");
+
+  if(token){
+    throw new ApiError(400,"You Are logged in Another Device",token)
+    
+  }
+
   const { accessToken, refreshToken } = await genrateAccessAndRefreshToken(
     user._id,
   );

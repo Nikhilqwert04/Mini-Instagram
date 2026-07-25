@@ -27,6 +27,14 @@ const adminLogin = asyncHandler(async (req, res) => {
       "Access denied: Only administrators can log in here",
     );
   }
+  
+  const token =
+    req.cookies?.Admin_Access_Token || req.cookies?.Access_Token ||
+    req.header("Authorization")?.replace("Bearer ", "");
+
+  if (token) {
+    throw new ApiError(400, "You Are logged in Another Device");
+  }
 
   const { accessToken, refreshToken } = await genrateAccessAndRefreshToken(
     user._id,
