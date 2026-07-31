@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
-import Loginpage from './components/loginpage'
+import Signup from './components/signup'
 
 import React from 'react'
 
 const App = () => {
   return (
     <div>
-      <Loginpage/>
+      <Signup/>
     </div>
   )
 }
