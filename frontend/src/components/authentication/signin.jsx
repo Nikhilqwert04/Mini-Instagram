@@ -1,34 +1,41 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const loginpage = () => {
+const Loginpage = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [loading, setloading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
-  const login = () => {
-    const navigate = useNavigate();
+  const SubmitHandler = async (e) => {
+    e.preventDefault();
+    setloading(true);
+    setErrorMsg("");
 
-    const SubmitHandler = async (e) => {
-      e.preventDefault();
-      setloading(true);
-
-      try {
-        const response = await axios.post("/api/v1/auth/login", {
+    try {
+      const response = await axios.post(
+        "/api/v1/auth/login",
+        {
           email,
           password,
-        });
-        if (res.data.success) {
-          navigate("/dashboard");
+        },
+        {
+          withCredentials: true,
         }
-      } catch (error) {
-        console.log(error.response?.data || error.message);
-      } finally {
-        setloading(false);
-      }
-    };
+      );
+        navigate("/dashboard");
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      setErrorMsg(
+        error.response?.data?.message || "Invalid credentials or login failed"
+      );
+    } finally {
+      setloading(false);
+    }
   };
+
   return (
     <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center font-sans text-white">
       <img
@@ -46,12 +53,13 @@ const loginpage = () => {
           </h1>
           <div className="h-1 w-16 bg-gradient-to-r from-pink-500 to-cyan-400 mb-10 rounded-full"></div>
 
-          <form
-            className="flex flex-col gap-6 w-full max-w-sm"
-            onSubmit={(e) => {
-              SubmitHandler(e);
-            }}
-          >
+          {errorMsg && (
+            <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-semibold max-w-sm">
+              {errorMsg}
+            </div>
+          )}
+
+          <form className="flex flex-col gap-6 w-full max-w-sm" onSubmit={SubmitHandler}>
             <input
               type="email"
               placeholder="Email"
@@ -105,10 +113,10 @@ const loginpage = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Signing up...
+                  Signing in...
                 </>
               ) : (
-                "Sign up"
+                "Sign in"
               )}
             </button>
           </form>
@@ -168,4 +176,4 @@ const loginpage = () => {
   );
 };
 
-export default loginpage;
+export default Loginpage;

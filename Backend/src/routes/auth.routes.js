@@ -9,6 +9,7 @@ import {
   resendEmailVerification,
   resetPassword,
   verifyUser,
+  getCurrentUser,
 } from "../controllers/auth.controller.js";
 import validate from "../middlewares/validator.middleware.js";
 
@@ -19,7 +20,7 @@ import {
   userRegisterValidator,
   userResetForgotPasswordValidator,
 } from "../validates/validate.midd.js";
-import  verifyJWT  from "../middlewares/auth.middleware.js";
+import verifyJWT from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.route("/register").post(userRegisterValidator(), validate, register);
@@ -37,6 +38,7 @@ router
 
 router.route("/verify-user/:verificationToken").post(verifyJWT, verifyUser);
 router.route("/resend-userVerfiy").post(verifyJWT, resendEmailVerification);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 
 export default router;
