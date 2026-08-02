@@ -1,28 +1,34 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const loginpage = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [loading, setloading] = useState(false);
 
-  const SubmitHandler = async (e) => {
-    e.preventDefault();
-    setloading(true);
+  const login = () => {
+    const navigate = useNavigate();
 
-    try {
-      const response = await axios.post("/api/v1/auth/login", {
-        email,
-        password,
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.log(error.response?.data || error.message);
-    } finally {
-      setloading(false);
-    }
+    const SubmitHandler = async (e) => {
+      e.preventDefault();
+      setloading(true);
+
+      try {
+        const response = await axios.post("/api/v1/auth/login", {
+          email,
+          password,
+        });
+        if (res.data.success) {
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.log(error.response?.data || error.message);
+      } finally {
+        setloading(false);
+      }
+    };
   };
-
   return (
     <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center font-sans text-white">
       <img
