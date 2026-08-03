@@ -17,8 +17,6 @@ const Profile = () => {
     }
     fetchUserData()
   }, [])
-
-  console.log(fetchUserData)
   const user = {
     name: fetchUserData?.data?.fullName,
     username: fetchUserData?.data?.username,
