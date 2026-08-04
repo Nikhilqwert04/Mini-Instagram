@@ -1,24 +1,27 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Search = () => {
   const [query, setQuery] = useState("");
-  const [search, setsearch] = useState(["nikhil", "himasnhika"]);
+  const [search, setsearch] = useState([]);
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Searching for:", query);
 
-    const FetchUser =async()=>{
-      try{
-        const res = await axios.get(`localhost:3000/api/v1/post/searchUsername?q=${query}`)
-        setsearch(res.data)
-      }catch(error){
-        
-      }
-    }
+    FetchUser();
   };
 
+  const FetchUser = async () => {
+    try {
+      const res = await axios.get(`/api/v1/post/searchUsername?q=${query}`);
+      setsearch(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="max-w-2xl mx-auto mt-6">
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
@@ -41,9 +44,10 @@ const Search = () => {
         </form>
       </div>
       <div className="mt-6 flex flex-col gap-2">
-        {search.map((user, index) => (
+        {search.map((user) => (
           <div
-            key={index}
+            key={user.username}
+            onClick={() => navigate(`/dashboard/user/${user.username}`)}
             className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4 hover:bg-zinc-800/70 hover:border-zinc-700 transition-all duration-200 cursor-pointer group"
           >
             <div className="shrink-0">
@@ -55,10 +59,10 @@ const Search = () => {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-bold text-blue-400 group-hover:text-blue-300 transition-colors truncate">
-                @{user}
+                @{user.username}
               </span>
               <span className="text-xs text-zinc-400 truncate">
-                {user.charAt(0).toUpperCase() + user.slice(1)}
+                {user.fullName}
               </span>
             </div>
             <svg
@@ -68,7 +72,11 @@ const Search = () => {
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </div>
         ))}

@@ -78,10 +78,22 @@ const otherUserPost = asyncHandler(async (req, res) => {
   const user = req.user;
 
   if (username === user.username) {
-    return userAllPost(req, res);
+    const otherUser = {
+      fullName: user.fullName,
+      username: user.username,
+      email: user.email,
+    };
+    const otherUserPost = await Post.find({
+      userId: user._id,
+    }).select("-_id -userId -imageKitFileId -visibility");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, { otherUser, otherUserPost }, "User Post Fetched Successfully"),
+      );
   }
 
-  const otherUser = await User.findOne({ username }).select("fullName, username email");
+  const otherUser = await User.findOne({ username }).select("fullName username email");
 
   if (!otherUser) {
     throw new ApiError(404, "User Not Found");
@@ -166,7 +178,7 @@ const SearchUser = asyncHandler(async (req, res) => {
 
   const SelectedUsers = await User.find({
     username: {
-      $regex: q,
+      $regex: "^"+q,
       $options: "i",
     },
   }).select("fullName email username -_id");

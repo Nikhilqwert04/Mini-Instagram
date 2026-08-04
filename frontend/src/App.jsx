@@ -9,6 +9,7 @@ import Profile from "./components/Dashboard/pages/profile";
 import Search from "./components/Dashboard/pages/search";
 import CreatePost from "./components/Dashboard/pages/createpost";
 import MyPosts from "./components/Dashboard/pages/myPost";
+import UserProfile from "./components/Dashboard/pages/userProfile";
 
 const App = () => {
   return (
@@ -18,7 +19,7 @@ const App = () => {
         <Route path="/signin" element={<Signin />} />
         <Route path="/admin" element={<Admin />} />
 
-        {/* Protected Dashboard Route */}
+
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<Profile />} />
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="search" element={<Search />} />
             <Route path="create-post" element={<CreatePost />} />
             <Route path="my-posts" element={<MyPosts />} />
+            <Route path="user/:username" element={<UserProfile />} />
           </Route>
         </Route>
       </Routes>
