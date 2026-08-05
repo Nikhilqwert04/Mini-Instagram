@@ -1,13 +1,11 @@
-import React, { useState, useRef } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
-const CreatePost = () =>{
-  const [first, setfirst] = useState(second)
-}
-
+const CreatePost = () => {
   return (
-    <div></div>
+    <div>
+      {/* Empty Create Post Component */}
+    </div>
   );
+};
 
-export default CreatePost;
+export default CreatePost;  
