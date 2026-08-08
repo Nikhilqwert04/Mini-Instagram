@@ -1,23 +1,44 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const loginpage = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [loading, setloading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   const SubmitHandler = async (e) => {
     e.preventDefault();
     setloading(true);
+    setErrorMsg("");
 
     try {
-      const response = await axios.post("/api/v1/admin/adminlogin", {
-        email,
-        password,
-      });
-      console.log(response.data);
+      const response = await axios.post(
+        "/api/v1/admin/adminlogin",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      
+      const token = response.data?.data?.accessToken;
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("adminToken", token);
+      }
+      
+      navigate("/admindash/overview");
     } catch (error) {
       console.log(error.response?.data || error.message);
+      setErrorMsg(
+        error.response?.data?.message || "Invalid credentials or login failed"
+      );
     } finally {
       setloading(false);
     }
@@ -39,6 +60,12 @@ const loginpage = () => {
             Instagram
           </h1>
           <div className="h-1 w-16 bg-gradient-to-r from-pink-500 to-cyan-400 mb-10 rounded-full"></div>
+
+          {errorMsg && (
+            <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-semibold max-w-sm">
+              {errorMsg}
+            </div>
+          )}
 
           <form
             className="flex flex-col gap-6 w-full max-w-sm"
@@ -99,10 +126,10 @@ const loginpage = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Signing up...
+                  Signing in...
                 </>
               ) : (
-                "Sign up"
+                "Sign in"
               )}
             </button>
           </form>

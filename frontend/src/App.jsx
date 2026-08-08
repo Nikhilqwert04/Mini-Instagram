@@ -10,6 +10,10 @@ import Search from "./components/Dashboard/pages/search";
 import CreatePost from "./components/Dashboard/pages/createpost";
 import MyPosts from "./components/Dashboard/pages/myPost";
 import UserProfile from "./components/Dashboard/pages/userProfile";
+import AdminDashboard from "./components/AdminDashboard/adminDashboard";
+import AdminOverview from "./components/AdminDashboard/pages/adminOverview";
+import AdminUsers from "./components/AdminDashboard/pages/adminUsers";
+import AdminUserProfile from "./components/AdminDashboard/pages/adminUserProfile";
 
 const App = () => {
   return (
@@ -28,6 +32,15 @@ const App = () => {
             <Route path="create-post" element={<CreatePost />} />
             <Route path="my-posts" element={<MyPosts />} />
             <Route path="user/:username" element={<UserProfile />} />
+          </Route>
+        </Route>
+
+        <Route element ={<ProtectedRoute/>}>
+          <Route path="/admindash" element={<AdminDashboard/>}>
+            <Route index element={<AdminOverview />} />
+            <Route path="overview" element={<AdminOverview />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="user/:username" element={<AdminUserProfile />} />
           </Route>
         </Route>
       </Routes>

@@ -12,6 +12,7 @@ const ProtectedRoute = () => {
     axios
       .get("/api/v1/auth/current-user", {
         withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       .then((response) => {
         if (response.status === 200 || response.data?.success) {
