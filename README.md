@@ -1,0 +1,395 @@
+# 📸 Mini-Instagram
+
+A lightweight, high-performance, full-stack social media web application. Built with a decoupled architecture featuring a robust Node.js/Express REST API and a highly responsive React 19 frontend styled with Tailwind CSS v4.
+
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2018.0.0-emerald)](https://nodejs.org)
+[![React Version](https://img.shields.io/badge/react-v19.0-blue)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/tailwind-v4.0-38bdf8)](https://tailwindcss.com)
+[![Vite](https://img.shields.io/badge/vite-v8.0-646cff)](https://vite.dev)
+
+---
+
+## 📖 Table of Contents
+
+1. [Overview](#-overview)
+2. [Features](#-features)
+3. [Tech Stack](#-tech-stack)
+4. [Architecture](#-architecture)
+5. [Getting Started](#-getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Configuration](#configuration)
+6. [Usage & Development](#-usage--development)
+7. [API Documentation](#-api-documentation)
+8. [Deployment](#-deployment)
+9. [Troubleshooting](#-troubleshooting)
+10. [Roadmap](#-roadmap)
+11. [License & Credits](#-license--credits)
+
+---
+
+## 🔍 Overview
+
+**Mini-Instagram** is a modern social media platform designed to replicate core Instagram features while introducing a comprehensive administrative control panel. The system is engineered with a strict separation of concerns:
+
+*   **Backend**: A secure Express.js server utilizing MongoDB for data persistence, JWT and HttpOnly cookies for session management, and ImageKit for cloud-based image hosting and optimization.
+*   **Frontend**: A single-page application (SPA) built on React 19 and Vite, leveraging Tailwind CSS v4 for a dark-themed, mobile-first user interface.
+
+### Key Value Propositions
+*   **Dual-Portal Architecture**: Separate, secure dashboards for standard users and platform administrators.
+*   **Optimized Media Delivery**: Direct integration with ImageKit CDN for real-time image resizing, optimization, and fast delivery.
+*   **Robust Authentication**: Hybrid authentication mechanism supporting both HttpOnly cookies and Bearer tokens to prevent XSS and CSRF attacks.
+
+---
+
+## ✨ Features
+
+### 👤 User Capabilities
+*   **Secure Authentication**: Signup and Signin with password hashing (bcrypt) and email verification capabilities (Nodemailer + Mailgen).
+*   **Dynamic Feed & Profiles**: Personalized profile pages, user search, and public profile views.
+*   **Post Creation**: Multi-part form uploads supporting image files via Multer, processed and stored securely in ImageKit.
+*   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, and Profile.
+
+### 🛡️ Administrative Capabilities
+*   **Admin Authentication**: Dedicated administrative login gateway.
+*   **System Overview**: High-level dashboard displaying platform analytics and user statistics.
+*   **User Management**: Complete directory of registered users with search, profile inspection, and moderation capabilities.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+*   **Core Library**: React 19.2 (Concurrent rendering, optimized hooks)
+*   **Build Tool**: Vite 8.0 (Lightning-fast HMR)
+*   **Routing**: React Router Dom 7.11 (Declarative routing with layout nesting)
+*   **Styling**: Tailwind CSS v4.3 + `@tailwindcss/vite` (Utility-first, zero-runtime CSS)
+*   **HTTP Client**: Axios 1.19 (Promise-based requests with interceptors)
+
+### Backend
+*   **Runtime**: Node.js (ES Modules enabled)
+*   **Framework**: Express 5.2 (Next-generation routing and middleware support)
+*   **Database**: MongoDB via Mongoose 9.7 (ODM with schema validation)
+*   **Authentication**: JSON Web Token (JWT) 9.0 & Cookie-Parser 1.4
+*   **File Handling**: Multer 2.2 (Memory-storage buffer processing)
+*   **Cloud Storage**: ImageKit SDK 6.0 (Image upload and CDN delivery)
+*   **Emailing**: Nodemailer 9.0 & Mailgen 2.0 (Transactional emails)
+
+---
+
+## 📐 Architecture
+
+### High-Level System Flow
+
+```
+┌──────────────┐       HTTPS       ┌──────────────┐      Mongoose      ┌──────────────┐
+│  React SPA   │ <───────────────> │ Express API  │ <────────────────> │ MongoDB Atlas│
+│ (Vite/Tail)  │  JSON / Cookies   │   (Node.js)  │                    └──────────────┘
+└──────────────┘                   └──────┬───────┘
+                                          │
+                                          │ ImageKit SDK
+                                          ▼
+                                   ┌──────────────┐
+                                   │ ImageKit CDN │ (Image Storage)
+                                   └──────────────┘
+```
+
+### Directory Structure
+
+```
+Mini-Instagram/
+├── Backend/
+│   ├── server.js                 # Application entry point
+│   ├── package.json              # Backend dependencies & scripts
+│   └── src/
+│       ├── app.js                # Express app configuration & middleware
+│       ├── controllers/          # Request handlers (Auth, Post, Admin)
+│       ├── db/                   # Database connection configuration
+│       ├── middlewares/          # Auth guards, validation interceptors
+│       ├── models/               # Mongoose Schemas (User, Post)
+│       ├── routes/               # Express API route definitions
+│       ├── services/             # Business logic & third-party integrations
+│       ├── utils/                # Helper functions (API response formatters)
+│       └── validates/            # Request payload validation schemas
+└── frontend/
+    ├── index.html                # SPA Entry HTML
+    ├── vite.config.js            # Vite configuration with Tailwind v4 plugin
+    ├── package.json              # Frontend dependencies & scripts
+    └── src/
+        ├── main.jsx              # React DOM mounting
+        ├── App.jsx               # Application Router & Layouts
+        ├── index.css             # Tailwind directives
+        ├── assets/               # Static assets & icons
+        └── components/           # UI Components
+            ├── AdminDashboard/   # Admin views, sidebars, and user management
+            ├── Dashboard/        # User feed, profile, creation, and search
+            └── authentication/   # Login, Signup, and Route Guards
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+Ensure you have the following installed on your local machine:
+*   **Node.js** (v18.0.0 or higher)
+*   **npm** (v9.0.0 or higher)
+*   **MongoDB** (Local instance or MongoDB Atlas URI)
+
+---
+
+### Installation
+
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/Nikhilqwert04/Mini-Instagram.git
+    cd Mini-Instagram
+    ```
+
+2.  **Install Backend Dependencies**:
+    ```bash
+    cd Backend
+    npm install
+    ```
+
+3.  **Install Frontend Dependencies**:
+    ```bash
+    cd ../frontend
+    npm install
+    ```
+
+---
+
+### Configuration
+
+#### Backend Configuration
+Create a `.env` file in the `/Backend` directory:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/mini-instagram?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_jwt_key_here
+ACCESS_TOKEN_EXPIRY=1d
+
+# ImageKit Credentials
+IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
+IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_endpoint_id
+
+# SMTP Configuration (Nodemailer)
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+SMTP_FROM_EMAIL=noreply@miniinstagram.com
+```
+
+#### Frontend Configuration
+Create a `.env` file in the `/frontend` directory:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+---
+
+## 💻 Usage & Development
+
+### Running the Backend Server
+From the `/Backend` directory:
+```bash
+# Start the server
+node server.js
+```
+*The server will start running on the port specified in your `.env` file (typically `http://localhost:5000`).*
+
+### Running the Frontend Client
+From the `/frontend` directory:
+```bash
+# Start the Vite development server
+npm run dev
+```
+*The client will be accessible at `http://localhost:5173`.*
+
+---
+
+## 🔌 API Documentation
+
+The backend exposes a RESTful API under the `/api/v1` prefix.
+
+### Authentication Endpoints (`/api/v1/auth`)
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/signup` | Register a new user | No |
+| `POST` | `/signin` | Authenticate user & issue tokens | No |
+| `GET` | `/current-user` | Retrieve authenticated user profile | Yes (JWT/Cookie) |
+| `POST` | `/logout` | Clear authentication cookies | Yes |
+
+### Post Endpoints (`/api/v1/post`)
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/create` | Create a new post (supports multipart image upload) | Yes |
+| `GET` | `/feed` | Retrieve global feed | Yes |
+| `GET` | `/my-posts` | Retrieve posts created by the current user | Yes |
+| `DELETE` | `/:id` | Delete a specific post | Yes (Owner) |
+
+### Admin Endpoints (`/api/v1/admin`)
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/overview` | Retrieve platform metrics & user counts | Yes (Admin) |
+| `GET` | `/users` | Retrieve list of all registered users | Yes (Admin) |
+| `DELETE` | `/user/:id` | Suspend/Delete a user account | Yes (Admin) |
+
+---
+
+### Sample Request/Response
+
+#### 1. User Verification (`GET /api/v1/auth/current-user`)
+
+**Headers**:
+```http
+Authorization: Bearer <your_jwt_token>
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "user": {
+    "id": "65cb48f1e92a8b34c8a12345",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "fullName": "John Doe",
+    "avatar": "https://ik.imagekit.io/mini-insta/avatars/john.jpg",
+    "role": "user"
+  }
+}
+```
+
+#### 2. Create Post (`POST /api/v1/post/create`)
+
+**Payload (Multipart Form Data)**:
+*   `caption`: "Chasing sunsets in California 🌅"
+*   `image`: `[File Binary]`
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Post created successfully",
+  "post": {
+    "id": "65cb49f2e92a8b34c8a67890",
+    "caption": "Chasing sunsets in California 🌅",
+    "imageUrl": "https://ik.imagekit.io/mini-insta/posts/sunset_abc123.jpg",
+    "author": "65cb48f1e92a8b34c8a12345",
+    "createdAt": "2025-02-15T08:30:00.000Z"
+  }
+}
+```
+
+---
+
+## 🛡️ Security Implementations
+
+### Protected Routes (Frontend)
+The React application utilizes a robust `<ProtectedRoute />` wrapper that intercepts navigation requests, validates the session against the backend API, and handles graceful fallbacks.
+
+```jsx
+// frontend/src/components/authentication/protectedRoute.jsx
+const ProtectedRoute = () => {
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+
+    axios
+      .get("/api/v1/auth/current-user", {
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      .then((response) => {
+        if (response.status === 200 || response.data?.success) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/signin" replace />;
+};
+```
+
+---
+
+## 📦 Deployment
+
+### Production Build (Frontend)
+To compile the React SPA into optimized, static assets:
+```bash
+cd frontend
+npm run build
+```
+The output will be generated in the `frontend/dist` directory, ready to be served by Nginx, Apache, or static hosting providers like Vercel or Netlify.
+
+### Production Execution (Backend)
+1.  Set `NODE_ENV=production` in your environment variables.
+2.  Use a process manager like **PM2** to keep the Node process alive:
+    ```bash
+    npm install pm2 -g
+    pm2 start server.js --name "mini-instagram-api"
+    ```
+
+---
+
+## ❓ Troubleshooting
+
+### Common Issues
+
+1.  **CORS Errors on Frontend API Calls**
+    *   *Symptom*: Requests fail with "Cross-Origin Request Blocked".
+    *   *Solution*: Ensure the `origin` array in `Backend/src/app.js` matches your frontend URL exactly.
+    ```javascript
+    cors({
+      origin: "http://localhost:5173", // Must match your frontend port
+      credentials: true
+    })
+    ```
+
+2.  **Image Upload Failures**
+    *   *Symptom*: `500 Internal Server Error` when creating a post.
+    *   *Solution*: Verify your ImageKit credentials in `Backend/.env`. Ensure that the public key, private key, and URL endpoint are correct and contain no trailing slashes.
+
+3.  **MongoDB Connection Failures**
+    *   *Symptom*: Server crashes on startup with `MongoDB connection error`.
+    *   *Solution*: Ensure your IP address is whitelisted in your MongoDB Atlas Network Security settings, and verify that the password in your connection string is URL-encoded if it contains special characters.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **Direct Messaging**: Real-time chat functionality using WebSockets (Socket.io).
+- [ ] **Likes & Comments**: Interactive social features on posts.
+- [ ] **Story Mode**: Temporary 24-hour posts with automated expiration.
+- [ ] **Dark/Light Mode Toggle**: System-wide theme configuration.
+
+---
+
+## 📄 License & Credits
+
+### License
+Distributed under the **ISC License**. See `LICENSE` for more information.
+
+### Credits
+*   **Developer**: [Nikhil](https://github.com/Nikhilqwert04)
+*   **Image Hosting**: [ImageKit.io](https://imagekit.io)
+*   **UI Assets**: Icons sourced from [Heroicons](https://heroicons.com) and SVGs.
