@@ -192,17 +192,6 @@ const AdminOverview = () => {
                   </strong>{" "}
                   view.
                 </p>
-                <div className="mt-4 p-3 bg-zinc-800/30 border border-zinc-800/80 rounded-2xl text-xs text-zinc-500">
-                  <span className="text-amber-500 font-bold mr-1">
-                    ⚠️ Dev Mode:
-                  </span>{" "}
-                  The UI currently uses responsive mock states. Hook your API
-                  endpoints in{" "}
-                  <code className="text-zinc-300 font-mono">
-                    adminOverview.jsx
-                  </code>{" "}
-                  to dynamic state when ready.
-                </div>
               </div>
             </div>
           </div>

@@ -1,35 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AdminUsers = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState({}); // Track loading state of block/unblock actions for specific users
+  const [users, setUsers] = useState([]);
 
-  // Mock initial users data representing GET /api/v1/admin/UserandNoofPost
-  // structure: Array of { _id, username, fullName, email, postcount, isBlocked }
-  const [users, setUsers] = useState([
-    { _id: "1", username: "alex_jones", fullName: "Alex Jones", email: "alex@example.com", postcount: 14, isBlocked: false },
-    { _id: "2", username: "julia_k", fullName: "Julia Kern", email: "julia@example.com", postcount: 32, isBlocked: false },
-    { _id: "3", username: "sam_smith", fullName: "Sam Smith", email: "sam@example.com", postcount: 0, isBlocked: true },
-    { _id: "4", username: "emily_rose", fullName: "Emily Rose", email: "emily@example.com", postcount: 5, isBlocked: false },
-    { _id: "5", username: "mike_d", fullName: "Mike Davidson", email: "mike@example.com", postcount: 27, isBlocked: false },
-  ]);
-
-  // Simulate API fetch on component mount
+  // Fetch users from API on mount
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    const fetchUsers = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+      try {
+        const response = await axios.get("/api/v1/admin/UserandNoofPost", {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (response.data?.success && response.data?.data?.AllUserNmandCoun) {
+          setUsers(response.data.data.AllUserNmandCoun);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, []);
 
-  // Filter users locally based on query (can be replaced with API search GET /api/v1/admin/searchUsername)
+  // Filter users locally based on query
   const filteredUsers = users.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+    (user.username || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.fullName || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Toggle user block/unblock state
@@ -37,22 +42,28 @@ const AdminUsers = () => {
     const userId = user._id;
     setActionLoading((prev) => ({ ...prev, [userId]: true }));
 
-    // API INTEGRATION TO BE DONE BY USER
-    // To block: PATCH /api/v1/admin/Adminuser/:username/block
-    // To unblock: PATCH /api/v1/admin/Adminuser/:username/unblock
-    try {
-      console.log(`Toggle block state for user: ${user.username}`);
-      
-      // Simulate API latency
-      await new Promise((resolve) => setTimeout(resolve, 600));
+    const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+    const isCurrentlyBlocked = user.isBlocked;
+    const url = `/api/v1/admin/Adminuser/${user.username}/${isCurrentlyBlocked ? "unblock" : "block"}`;
 
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u._id === userId ? { ...u, isBlocked: !u.isBlocked } : u
-        )
+    try {
+      const response = await axios.patch(
+        url,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
       );
+      if (response.data?.success) {
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u._id === userId ? { ...u, isBlocked: !isCurrentlyBlocked } : u
+          )
+        );
+      }
     } catch (error) {
-      console.log("Error blocking/unblocking user:", error);
+      console.error("Error blocking/unblocking user:", error);
     } finally {
       setActionLoading((prev) => ({ ...prev, [userId]: false }));
     }

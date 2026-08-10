@@ -1,72 +1,76 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AdminUserProfile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-
-  // Mock initial data representing GET /api/v1/admin/Adminuser/:username
   const [userData, setUserData] = useState({
-    fullName: "Alex Jones",
-    username: username || "alex_jones",
-    email: "alex@example.com",
+    fullName: "",
+    username: username || "",
+    email: "",
     isBlocked: false,
-    posts: [
-      {
-        _id: "p1",
-        imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
-        description: "Exploring new horizons 🌅 #travel #photography",
-      },
-      {
-        _id: "p2",
-        imageUrl: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=600&auto=format&fit=crop&q=80",
-        description: "Minimalist desk setup for late night coding sessions 💻✨",
-      },
-      {
-        _id: "p3",
-        imageUrl: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&auto=format&fit=crop&q=80",
-        description: "Finding peace in nature's embrace 🌲🎒",
-      },
-    ],
+    posts: [],
   });
 
-  // Simulate API fetch on load
+  // Fetch user data & posts on mount/param change
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      // Set username dynamically from param
-      setUserData((prev) => ({
-        ...prev,
-        username: username,
-        fullName: username.charAt(0).toUpperCase() + username.slice(1).replace("_", " "),
-        email: `${username}@example.com`,
-      }));
-      setLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
+    const fetchUserData = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+      try {
+        const response = await axios.get(`/api/v1/admin/Adminuser/${username}`, {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (response.data?.success && response.data?.data) {
+          const { otherUser, otherUserPost } = response.data.data;
+          setUserData({
+            fullName: otherUser.fullName || "",
+            username: otherUser.username || username,
+            email: otherUser.email || "",
+            isBlocked: !!otherUser.isBlocked,
+            posts: otherUserPost || [],
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (username) {
+      fetchUserData();
+    }
   }, [username]);
 
   // Handle block/unblock action
   const handleToggleBlock = async () => {
     setActionLoading(true);
 
-    // API INTEGRATION TO BE DONE BY USER
-    // To block: PATCH /api/v1/admin/Adminuser/:username/block
-    // To unblock: PATCH /api/v1/admin/Adminuser/:username/unblock
-    try {
-      console.log(`Action triggered for ${userData.username}`);
-      
-      // Simulate API latency
-      await new Promise((resolve) => setTimeout(resolve, 600));
+    const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+    const isCurrentlyBlocked = userData.isBlocked;
+    const url = `/api/v1/admin/Adminuser/${userData.username}/${isCurrentlyBlocked ? "unblock" : "block"}`;
 
-      setUserData((prev) => ({
-        ...prev,
-        isBlocked: !prev.isBlocked,
-      }));
+    try {
+      const response = await axios.patch(
+        url,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+      if (response.data?.success) {
+        setUserData((prev) => ({
+          ...prev,
+          isBlocked: !isCurrentlyBlocked,
+        }));
+      }
     } catch (error) {
-      console.log("Error updating user status:", error);
+      console.error("Error updating user status:", error);
     } finally {
       setActionLoading(false);
     }

@@ -110,6 +110,7 @@ const AdminotherUserPost = asyncHandler(async (req, res) => {
       fullName: user.fullName,
       username: user.username,
       email: user.email,
+      isBlocked: user.isBlocked,
     };
     const otherUserPost = await Post.find({
       userId: user._id,
@@ -122,7 +123,7 @@ const AdminotherUserPost = asyncHandler(async (req, res) => {
   }
 
   const otherUser = await User.findOne({ username }).select(
-    "fullName username email",
+    "fullName username email isBlocked",
   );
 
   if (!otherUser) {
@@ -193,6 +194,11 @@ const UserNameandPostCount = asyncHandler(async (req, res) => {
   const totalposts = await Post.countDocuments();
   const AllUserNmandCoun = await User.aggregate([
     {
+      $match: {
+        role: UserRolesEnum.USER,
+      },
+    },
+    {
       $lookup: {
         from: "posts",
         localField: "_id",
@@ -201,19 +207,13 @@ const UserNameandPostCount = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: {
-        path: "$AllPost",
-      },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        username: {
-          $first: "$username",
-        },
-        postcount: {
-          $sum: 1,
-        },
+      $project: {
+        _id: 1,
+        username: 1,
+        fullName: 1,
+        email: 1,
+        isBlocked: 1,
+        postcount: { $size: "$AllPost" },
       },
     },
   ]);

@@ -2,9 +2,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ allowedRole }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
@@ -17,6 +18,7 @@ const ProtectedRoute = () => {
       .then((response) => {
         if (response.status === 200 || response.data?.success) {
           setIsAuthenticated(true);
+          setUserRole(response.data?.data?.role);
         } else {
           setIsAuthenticated(false);
         }
@@ -40,7 +42,15 @@ const ProtectedRoute = () => {
     );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/signin" replace />;
+  if (!isAuthenticated) {
+    return allowedRole === "admin" ? <Navigate to="/admin" replace /> : <Navigate to="/signin" replace />;
+  }
+
+  if (allowedRole && userRole !== allowedRole) {
+    return allowedRole === "admin" ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
