@@ -17,8 +17,10 @@ const UserProfile = () => {
         console.log(error);
       }
     };
-    fetchUser();
-  }, []);
+    if (username) {
+      fetchUser();
+    }
+  }, [username]);
 
   return (
     <div className="max-w-2xl mx-auto mt-6">
@@ -30,17 +32,17 @@ const UserProfile = () => {
             <div className="relative shrink-0">
               <div className="w-32 h-32 rounded-full bg-zinc-700 ring-4 ring-zinc-900 shadow-xl flex items-center justify-center">
                 <span className="text-4xl font-bold text-zinc-400">
-                  {username.charAt(0).toUpperCase()}
+                  {(username || "").charAt(0).toUpperCase()}
                 </span>
               </div>
             </div>
 
             <div className="mt-2 sm:mt-0">
               <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {data.otherUser?.username}
+                {data.otherUser?.fullName}
               </h2>
               <p className="text-sm sm:text-base font-medium text-blue-400 mt-0.5">
-                @{data.otherUser?.fullName}
+                @{data.otherUser?.username}
               </p>
             </div>
           </div>
@@ -48,7 +50,7 @@ const UserProfile = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-zinc-800">
             <div className="bg-zinc-800/50 rounded-2xl p-4 border border-zinc-800">
               <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
-                {data.otherUser?.username}
+                Username
               </p>
               <p className="text-base font-semibold text-white">@{username}</p>
             </div>
