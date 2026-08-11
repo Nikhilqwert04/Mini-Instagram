@@ -8,7 +8,9 @@ import { genrateAccessAndRefreshToken } from "./auth.controller.js";
 import { userAllPost } from "./post.controller.js";
 
 const adminLogin = asyncHandler(async (req, res) => {
+  console.log("req:",req);
   const { email, password } = req.body;
+  console.log("we got the body  ",email)
   const user = await User.findOne({ email });
 
   if (!user) {
