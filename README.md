@@ -216,13 +216,18 @@ bash
 npm run dev
 
 # Start the server
-node server.js
-```
+
+bash
+npm run dev
+
+
 *The server will start running on the port specified in your `.env` file (typically `http://localhost:5000`).*
 
 ### Running the Frontend Client
 From the `/frontend` directory:
-```bash
+bash
+npm run dev
+
 # Start the Vite development server
 npm run dev
 ```
