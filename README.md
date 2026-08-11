@@ -316,10 +316,23 @@ Authorization: Bearer <your_jwt_token>
 
 ## 🛡️ Security Implementations
 
+### Cross-Origin Cookie Security
+To support secure cross-origin requests (CORS) and ensure session cookies are transmitted safely between the frontend and backend, the application configures strict cookie options. Both authentication and administrative controllers issue HTTP-only, secure cookies with the `sameSite: "none"` attribute:
+
+javascript
+const option = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none"
+};
+
+
+This configuration prevents Client-Side Scripting (XSS) access to tokens while allowing credentials to be sent securely across different origins.
+
 ### Protected Routes (Frontend)
 The React application utilizes a robust `<ProtectedRoute />` wrapper that intercepts navigation requests, validates the session against the backend API, and handles graceful fallbacks.
 
-```jsx
+jsx
 // frontend/src/components/authentication/protectedRoute.jsx
 const ProtectedRoute = () => {
   const [loading, setLoading] = useState(true);
@@ -348,9 +361,6 @@ const ProtectedRoute = () => {
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/signin" replace />;
 };
-```
-
----
 
 ## 📦 Deployment
 
