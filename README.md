@@ -1,3 +1,4 @@
+
 # 📸 Mini-Instagram
 
 A lightweight, high-performance, full-stack social media web application. Built with a decoupled architecture featuring a robust Node.js/Express REST API and a highly responsive React 19 frontend styled with Tailwind CSS v4.
@@ -335,22 +336,33 @@ const ProtectedRoute = () => {
 
 ### Production Build (Frontend)
 To compile the React SPA into optimized, static assets:
-```bash
+bash
 cd frontend
 npm run build
-```
+
 The output will be generated in the `frontend/dist` directory, ready to be served by Nginx, Apache, or static hosting providers like Vercel or Netlify.
+
+For hosting on **Vercel**, a `vercel.json` configuration is included in the frontend directory to handle Single Page Application (SPA) routing by rewriting all requests to `index.html`:
+
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
 
 ### Production Execution (Backend)
 1.  Set `NODE_ENV=production` in your environment variables.
 2.  Use a process manager like **PM2** to keep the Node process alive:
-    ```bash
+    bash
     npm install pm2 -g
     pm2 start server.js --name "mini-instagram-api"
-    ```
+    
 
 ---
-
 ## ❓ Troubleshooting
 
 ### Common Issues
