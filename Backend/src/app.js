@@ -19,6 +19,10 @@ import postRouter from "./routes/post.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 
+app.use("/api/v1/health",async(_,res)=>{
+  return res.status(200).json({message:"Server is upp and healthy"})
+})
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/admin", adminRouter);
