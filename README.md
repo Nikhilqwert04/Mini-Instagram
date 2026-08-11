@@ -180,6 +180,8 @@ Create a `.env` file in the `/frontend` directory:
 env
 VITE_API_BASE_URL=http://localhost:5000
 
+
+> 🔑 **Authentication Note**: The application uses cross-origin cookie authentication. Axios is configured globally with `withCredentials = true` to automatically send session cookies with every request.
 # ImageKit Credentials
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
