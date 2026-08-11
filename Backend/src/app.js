@@ -6,7 +6,7 @@ const app = express();
 app.use(cookieParse());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173","https://mini-instagram-eight.vercel.app"],
     credentials: true,
     methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
