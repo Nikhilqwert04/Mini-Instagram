@@ -143,22 +143,22 @@ Ensure you have the following installed on your local machine:
 ### Installation
 
 1.  **Clone the Repository**:
-    ```bash
+    bash
     git clone https://github.com/Nikhilqwert04/Mini-Instagram.git
     cd Mini-Instagram
-    ```
+    
 
 2.  **Install Backend Dependencies**:
-    ```bash
+    bash
     cd Backend
     npm install
-    ```
+    
 
 3.  **Install Frontend Dependencies**:
-    ```bash
+    bash
     cd ../frontend
     npm install
-    ```
+    
 
 ---
 
@@ -167,11 +167,18 @@ Ensure you have the following installed on your local machine:
 #### Backend Configuration
 Create a `.env` file in the `/Backend` directory:
 
-```env
+env
 PORT=5000
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/mini-instagram?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_jwt_key_here
 ACCESS_TOKEN_EXPIRY=1d
+
+
+#### Frontend Configuration
+Create a `.env` file in the `/frontend` directory:
+
+env
+VITE_API_BASE_URL=http://localhost:5000
 
 # ImageKit Credentials
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
@@ -199,7 +206,15 @@ VITE_API_BASE_URL=http://localhost:5000/api/v1
 
 ### Running the Backend Server
 From the `/Backend` directory:
-```bash
+bash
+npm run dev
+
+
+### Running the Frontend Client
+From the `/frontend` directory:
+bash
+npm run dev
+
 # Start the server
 node server.js
 ```
