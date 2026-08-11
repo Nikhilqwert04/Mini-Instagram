@@ -5,7 +5,9 @@ const AdminOverview = () => {
   useEffect(() => {
     const fetchpost = async () => {
       try {
-        const res = await axios.get("/api/v1/admin/admin-dashboard");
+        const res = await axios.get("/api/v1/admin/admin-dashboard", {
+          withCredentials: true,
+        });
         setStats(res.data.data);
       } catch (error) {
         console.log(error);

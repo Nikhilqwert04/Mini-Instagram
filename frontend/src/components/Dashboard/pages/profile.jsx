@@ -8,7 +8,9 @@ const Profile = () => {
   useEffect(()=>{
     const  fetchUserData = async()=>{
       try{
-        const res = await axios.get("/api/v1/auth/current-user")
+        const res = await axios.get("/api/v1/auth/current-user", {
+          withCredentials: true,
+        })
         setfetchUserData(res.data)
       }catch(error){
         console.log(error);

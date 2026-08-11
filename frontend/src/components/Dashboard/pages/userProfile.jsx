@@ -10,7 +10,9 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`/api/v1/post/search/${username}`);
+        const res = await axios.get(`/api/v1/post/search/${username}`, {
+          withCredentials: true,
+        });
         setdata(res.data.data);
         console.log(res.data.data);
       } catch (error) {

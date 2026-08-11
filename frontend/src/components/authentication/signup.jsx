@@ -18,6 +18,8 @@ const loginpage = () => {
         username,
         email,
         password,
+      }, {
+        withCredentials: true,
       });
       console.log(response.data);
     } catch (error) {

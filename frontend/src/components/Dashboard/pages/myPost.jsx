@@ -9,7 +9,9 @@ const MyPosts = () => {
   useEffect(()=>{
     const fetchpost = async()=>{
       try{
-        const res = await axios.get('/api/v1/post/me')
+        const res = await axios.get('/api/v1/post/me', {
+          withCredentials: true,
+        })
         setfetchpost(res.data.data.Allpost)
       } catch(error){
         console.log(error)

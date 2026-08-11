@@ -16,7 +16,9 @@ const Search = () => {
 
   const FetchUser = async () => {
     try {
-      const res = await axios.get(`/api/v1/post/searchUsername?q=${query}`);
+      const res = await axios.get(`/api/v1/post/searchUsername?q=${query}`, {
+        withCredentials: true,
+      });
       setsearch(res.data.data);
     } catch (error) {
       console.log(error);
