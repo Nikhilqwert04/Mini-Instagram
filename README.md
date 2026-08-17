@@ -50,7 +50,8 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **Secure Authentication**: Signup and Signin with password hashing (bcrypt) and email verification capabilities (Nodemailer + Mailgen).
 *   **Dynamic Feed & Profiles**: Personalized profile pages, user search, and public profile views.
 *   **Post Creation**: Multi-part form uploads supporting image files via Multer, processed and stored securely in ImageKit.
-*   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, and Profile.
+*   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, Profile, and Chat.
+*   **Real-Time Chat**: Instant messaging interface powered by Socket.io, allowing real-time communication between connected users.
 
 ### 🛡️ Administrative Capabilities
 *   **Admin Authentication**: Dedicated administrative login gateway.
@@ -58,7 +59,6 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **User Management**: Complete directory of registered users with search, profile inspection, and moderation capabilities.
 
 ---
-
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -67,6 +67,7 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **Routing**: React Router Dom 7.11 (Declarative routing with layout nesting)
 *   **Styling**: Tailwind CSS v4.3 + `@tailwindcss/vite` (Utility-first, zero-runtime CSS)
 *   **HTTP Client**: Axios 1.19 (Promise-based requests with interceptors)
+*   **Real-time Communication**: Socket.io-client 4.8 (Bi-directional event-based communication)
 
 ### Backend
 *   **Runtime**: Node.js (ES Modules enabled)
@@ -76,9 +77,9 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **File Handling**: Multer 2.2 (Memory-storage buffer processing)
 *   **Cloud Storage**: ImageKit SDK 6.0 (Image upload and CDN delivery)
 *   **Emailing**: Nodemailer 9.0 & Mailgen 2.0 (Transactional emails)
+*   **Real-time Server**: Socket.io 4.8 (Websocket server integration)
 
 ---
-
 ## 📐 Architecture
 
 ### High-Level System Flow
