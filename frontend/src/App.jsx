@@ -9,6 +9,7 @@ import Profile from "./components/Dashboard/pages/profile";
 import Search from "./components/Dashboard/pages/search";
 import CreatePost from "./components/Dashboard/pages/createpost";
 import MyPosts from "./components/Dashboard/pages/myPost";
+import Chat from "./components/Dashboard/pages/chat";
 import UserProfile from "./components/Dashboard/pages/userProfile";
 import AdminDashboard from "./components/AdminDashboard/adminDashboard";
 import AdminOverview from "./components/AdminDashboard/pages/adminOverview";
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="search" element={<Search />} />
             <Route path="create-post" element={<CreatePost />} />
             <Route path="my-posts" element={<MyPosts />} />
+            <Route path="chat" element={<Chat/>}/>
             <Route path="user/:username" element={<UserProfile />} />
           </Route>
         </Route>

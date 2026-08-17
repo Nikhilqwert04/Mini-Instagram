@@ -1,12 +1,28 @@
 import cookieParse from "cookie-parser";
+import http from "http";
+import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 const app = express();
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:5173",
+      "https://mini-instagram-eight.vercel.app",
+    ],
+    credentials: true,
+  },
+});
+
 app.use(cookieParse());
 app.use(
   cors({
-    origin: ["http://localhost:5173","https://mini-instagram-eight.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://mini-instagram-eight.vercel.app",
+    ],
     credentials: true,
     methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -19,12 +35,25 @@ import postRouter from "./routes/post.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 
-app.use("/api/v1/health",async(_,res)=>{
-  return res.status(200).json({message:"Server is upp and healthy"})
-})
+app.use("/api/v1/health", async (_, res) => {
+  return res.status(200).json({ message: "Server is upp and healthy" });
+});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/admin", adminRouter);
 
+io.on('connection',(socket)=>{
+  console.log("User Connected:", socket.id)
+
+  socket.on('message',(message)=>{
+    console.log(message)
+    io.emit('message',message)
+  })
+  socket.on("disconnect",()=>{
+    console.log("User Disconnected: ", socket.id)
+  })
+})
+
+export { server };
 export default app;

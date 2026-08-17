@@ -50,6 +50,10 @@ const Sidebar = () => {
           <NavLink to="/dashboard/my-posts" className={linkStyle}>
             🖼 My Posts
           </NavLink>
+
+          <NavLink to="/dashboard/chat" className={linkStyle}>
+            Chat
+          </NavLink>
         </nav>
       </div>
 
