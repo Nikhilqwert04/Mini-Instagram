@@ -184,7 +184,7 @@ VITE_API_BASE_URL=http://localhost:5000
 
 > 🔑 **Authentication Note**: The application uses cross-origin cookie authentication. Axios is configured globally with `withCredentials = true` to automatically send session cookies with every request.
 
-> 💬 **Socket.io Connection**: The real-time chat feature connects directly to the production Socket.io server at `https://mini-instagram-1-yy2m.onrender.com`.
+> 💬 **Socket.io Connection**: The real-time chat feature connects to the local development Socket.io server at `https://localhost:3000`.
 # ImageKit Credentials
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
@@ -222,7 +222,7 @@ npm run dev
 
 
 ### Real-time Chat
-* The application includes a real-time chat component powered by Socket.io, which connects to the production server endpoint at `https://mini-instagram-1-yy2m.onrender.com` to handle instant messaging.
+* The application includes a real-time chat component powered by Socket.io, which connects to the local development server endpoint at `https://localhost:3000` to handle instant messaging.
 # Start the server
 
 bash
