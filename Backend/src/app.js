@@ -43,17 +43,16 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/admin", adminRouter);
 
-io.on('connection',(socket)=>{
-  console.log("User Connected:", socket.id)
+io.on("connection", (socket) => {
+  console.log("User Connected:", socket.id);
 
-  socket.on('message',(message)=>{
-    console.log(message)
-    io.emit('message',message)
-  })
-  socket.on("disconnect",()=>{
-    console.log("User Disconnected: ", socket.id)
-  })
-})
+  socket.on("message", (message) => {
+    console.log(message);
+    io.emit("message", message);
+  });
+  socket.on("disconnect", () => {
+    console.log("User Disconnected: ", socket.id);
+  });
+});
 
-export { server };
 export default app;
