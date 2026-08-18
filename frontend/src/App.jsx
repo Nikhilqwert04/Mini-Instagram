@@ -15,7 +15,7 @@ import AdminDashboard from "./components/AdminDashboard/adminDashboard";
 import AdminOverview from "./components/AdminDashboard/pages/adminOverview";
 import AdminUsers from "./components/AdminDashboard/pages/adminUsers";
 import AdminUserProfile from "./components/AdminDashboard/pages/adminUserProfile";
-
+import Notfound from "./components/Notfound"
 const App = () => {
   return (
     <div>
@@ -35,6 +35,7 @@ const App = () => {
             <Route path="chat" element={<Chat/>}/>
             <Route path="user/:username" element={<UserProfile />} />
           </Route>
+          <Route path="*" element={<Notfound/>}/>
         </Route>
 
         <Route element ={<ProtectedRoute allowedRole="admin" />}>
