@@ -1,10 +1,53 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Search, Plus, Smile, SendHorizontal } from "lucide-react";
 
-const users = [{ name: "Nikhil" }, { name: "Himanshika" }];
+const users = [];
 
 const Chat = () => {
   const [selectedUser, setselectedUser] = useState(users[0]);
+  const [query, setQuery] = useState("");
+  const [search, setsearch] = useState([]);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log("Searching for:", query);
+
+    FetchUser();
+  };
+  const Userchat = JSON.parse(sessionStorage.getItem("users") || "[]");
+
+  const clickUser = async (Username) => {
+    let users = JSON.parse(sessionStorage.getItem("users") || "[]");
+
+    users.push({
+      name: Username,
+    });
+
+    sessionStorage.setItem("users", JSON.stringify(users));
+    setsearch([]);
+    setQuery("");
+
+    try{
+      const data = await axios.get(`/api/v1/post/search/${Username}`,{
+        withCredentials:true,
+      })
+      console.log(data.data.data.otherUser._id)
+    }
+    catch(error){
+      console.log(error)
+    }
+  };
+
+  const FetchUser = async () => {
+    try {
+      const res = await axios.get(`/api/v1/post/searchUsername?q=${query}`, {
+        withCredentials: true,
+      });
+      setsearch(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex h-full gap-4 text-zinc-100 font-sans">
@@ -12,20 +55,55 @@ const Chat = () => {
       <div className="bg-[#171719] w-[30%] h-full rounded-xl flex flex-col p-4 divide-y divide-dashed divide-zinc-800">
         <div className="flex flex-col gap-3 pb-4">
           <div className="text-2xl font-bold">Message</div>
-          <div className="flex flex-col relative">
-            <Search
-              className="absolute z-4 top-[8px] left-[10px]"
-              size={"18px"}
-            />
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full h-9 p-3 pl-12 rounded-lg bg-[#232324]"
-            />
+          <div className="flex flex-col relative gap-2 items-center">
+            <form onSubmit={handleSearch}>
+              <Search
+                className="absolute z-4 top-[8px] left-[10px]"
+                size={"18px"}
+              />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search User"
+                className="w-full h-9 p-3 pl-12 rounded-lg bg-[#232324]"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3.5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shrink-0 mt-3 "
+              >
+                Search
+              </button>
+            </form>
+            <div className=" h-auto w-full rounded-2xl">
+              {search.map((user) => (
+                <div
+                  key={user.username}
+                  onClick={() => clickUser(user.username)}
+                  className="w-full h-16 rounded-2xl flex items-center p-3 gap-3 cursor-pointer transition-all duration-200"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-blue-500/20">
+                    <img
+                      className="w-full h-full object-cover"
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      alt="Profile"
+                    />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-semibold truncate text-white">
+                      {user.username}
+                    </span>
+                    <span className="text-xs text-zinc-400 truncate">
+                      Click to Chat
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="pt-4 flex flex-col gap-3">
-          {users.map((user) => (
+          {Userchat.map((user) => (
             <div
               key={user.name}
               onClick={() => setselectedUser(user)}
@@ -70,28 +148,64 @@ const Chat = () => {
                 <span className="text-sm font-semibold truncate text-white">
                   {selectedUser.name}
                 </span>
-                <span className="text-xs text-green-400 font-medium">Online</span>
+                <span className="text-xs text-green-400 font-medium">
+                  Online
+                </span>
               </div>
             </div>
 
             <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-x-auto">
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">Hello Nikhil1</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2ijhcvdkjfbghekjfvbh</div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">Hello Nikhil1</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2ijhcvdkjfbghekjfvbh</div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">Hello Nikhil1</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2ijhcvdkjfbghekjfvbh</div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">Hello Nikhil1</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2ijhcvdkjfbghekjfvbh</div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">Hello Nikhil1</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">Hello Nikhil2ijhcvdkjfbghekjfvbh</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">kya haal hai</div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">sab badhiya</div>
+              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+                Hello Nikhil1
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2ijhcvdkjfbghekjfvbh
+              </div>
+              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+                Hello Nikhil1
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2ijhcvdkjfbghekjfvbh
+              </div>
+              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+                Hello Nikhil1
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2ijhcvdkjfbghekjfvbh
+              </div>
+              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+                Hello Nikhil1
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2ijhcvdkjfbghekjfvbh
+              </div>
+              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+                Hello Nikhil1
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                Hello Nikhil2ijhcvdkjfbghekjfvbh
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                kya haal hai
+              </div>
+              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
+                sab badhiya
+              </div>
             </div>
 
             {/* Bottom Message Input Bar */}

@@ -82,10 +82,11 @@ const otherUserPost = asyncHandler(async (req, res) => {
       fullName: user.fullName,
       username: user.username,
       email: user.email,
+      id:user._id,
     };
     const otherUserPost = await Post.find({
       userId: user._id,
-    }).select("-_id -userId -imageKitFileId -visibility");
+    }).select("_id -userId -imageKitFileId -visibility");
     return res
       .status(200)
       .json(
@@ -181,7 +182,7 @@ const SearchUser = asyncHandler(async (req, res) => {
       $regex: "^"+q,
       $options: "i",
     },
-  }).select("fullName email username -_id");
+  }).select("fullName email username _id");
 
   return res
     .status(200)
