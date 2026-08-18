@@ -52,7 +52,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink to="/dashboard/chat" className={linkStyle}>
-            Chat
+            💬 Chat
           </NavLink>
         </nav>
       </div>
