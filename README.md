@@ -51,7 +51,7 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **Dynamic Feed & Profiles**: Personalized profile pages, user search, and public profile views.
 *   **Post Creation**: Multi-part form uploads supporting image files via Multer, processed and stored securely in ImageKit.
 *   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, Profile, and Chat.
-*   **Real-Time Chat**: Instant messaging interface powered by Socket.io, allowing real-time communication between connected users.
+*   **Real-Time Chat**: Instant messaging interface powered by Socket.io, featuring a dedicated chat UI with a user sidebar, active chat window, and real-time socket middleware integration.
 
 ### 🛡️ Administrative Capabilities
 *   **Admin Authentication**: Dedicated administrative login gateway.
@@ -222,7 +222,7 @@ npm run dev
 
 
 ### Real-time Chat
-* The application includes a real-time chat component powered by Socket.io, which connects to the local development server endpoint at `https://localhost:3000` to handle instant messaging.
+* The application includes a real-time chat component powered by Socket.io, which utilizes custom socket middleware on the backend and connects to the local development server to handle instant messaging.
 # Start the server
 
 bash
