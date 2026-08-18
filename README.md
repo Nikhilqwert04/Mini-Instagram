@@ -52,6 +52,7 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **Post Creation**: Multi-part form uploads supporting image files via Multer, processed and stored securely in ImageKit.
 *   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, Profile, and Chat.
 *   **Real-Time Chat**: Instant messaging interface powered by Socket.io, featuring a dedicated chat UI with a user sidebar, active chat window, and real-time socket middleware integration.
+*   **Interactive 404 Fallback**: A custom, visually engaging "Not Found" page featuring programmatically drawn canvas animations (astronaut visor and floating cord), interactive stars, and quick navigation fallbacks to direct lost users back to safety.
 
 ### 🛡️ Administrative Capabilities
 *   **Admin Authentication**: Dedicated administrative login gateway.
