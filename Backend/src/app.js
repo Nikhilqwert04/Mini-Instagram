@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 import verifySocketJWT from "./middlewares/socket.middleware.js";
+import { handlejoinRoom, handleSendMessage, handleDisconnect } from "./controllers/joinroom.controller.js";
 const app = express();
 
 const server = http.createServer(app);
@@ -44,20 +45,14 @@ app.use("/api/v1/health", async (_, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/room", rooms)
+app.use("/api/v1/room", rooms);
 
 io.use(verifySocketJWT);
 
 io.on("connection", (socket) => {
-  console.log("User Connected:", socket.id);
-
-  socket.on("message", (message) => {
-    console.log(message);
-    io.emit("message", message);
-  });
-  socket.on("disconnect", () => {
-    console.log("User Disconnected: ", socket.id);
-  });
+  socket.on("join_room", (data) => handlejoinRoom(socket, data));
+  socket.on("sendMessage", (data) => handleSendMessage(io, socket, data));
+  socket.on("disconnect", () => handleDisconnect(socket));
 });
 
 export default app;
