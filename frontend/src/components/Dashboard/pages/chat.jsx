@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Plus, Smile, SendHorizontal } from "lucide-react";
 
 const users = [];
 
 const Chat = () => {
+  const [CurrentUser, setCurrentUser] = useState(null);
+  useEffect(() => {
+    axios
+      .get("/api/v1/auth/current-user", { withCredentials: true })
+      .then((res) => {
+        setCurrentUser(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const [selectedUser, setselectedUser] = useState(users[0]);
   const [query, setQuery] = useState("");
   const [search, setsearch] = useState([]);

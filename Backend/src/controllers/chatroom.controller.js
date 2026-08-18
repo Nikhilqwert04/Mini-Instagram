@@ -7,16 +7,16 @@ const createChatroom = asyncHandler(async (req, res) => {
   const userId1 = req.user._id;
   const { userId2 } = req.body;
 
-  const existingRoom = await rooms.findOne({
+  let chatroom = await rooms.findOne({
     $or: [
       { userId1: userId1, userId2: userId2 },
       { userId1: userId2, userId2: userId1 },
     ],
   });
-  if (existingRoom) {
+  if (chatroom) {
     console.log("room Exist");
   } else {
-    const user = await rooms.create({
+    chatroom = await rooms.create({
       userId1,
       userId2,
     });
@@ -26,7 +26,7 @@ const createChatroom = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {},
+        chatroom,
         "Room Created Successfull or its already exists",
       ),
     );
