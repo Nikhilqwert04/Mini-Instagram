@@ -55,4 +55,5 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => handleDisconnect(socket));
 });
 
+export { server };
 export default app;

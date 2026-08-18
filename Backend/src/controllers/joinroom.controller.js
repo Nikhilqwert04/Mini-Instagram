@@ -22,7 +22,11 @@ const handlejoinRoom = async (socket, data) => {
       const roomId = chatroom._id.toString();
       socket.join(roomId);
       console.log(`User joined room: ${roomId}`);
-      socket.emit("room_joined", { roomId });
+
+      // Retrieve chat history from the database
+      const messages = await Message.find({ roomId }).sort({ createdAt: 1 });
+
+      socket.emit("room_joined", { roomId, messages });
     }
   } catch (error) {
     console.error("Error joining room:", error.message);
