@@ -170,22 +170,24 @@ Ensure you have the following installed on your local machine:
 Create a `.env` file in the `/Backend` directory:
 
 env
-PORT=5000
+PORT=3000
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/mini-instagram?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_jwt_key_here
 ACCESS_TOKEN_EXPIRY=1d
+CORS_ORIGIN=http://localhost:5173,https://mini-instagram-eight.vercel.app
+FRONTEND_URL=http://localhost:5173
 
 
 #### Frontend Configuration
 Create a `.env` file in the `/frontend` directory:
 
 env
-VITE_API_BASE_URL=http://localhost:5000
+VITE_API_BASE_URL=http://localhost:3000
 
 
 > 🔑 **Authentication Note**: The application uses cross-origin cookie authentication. Axios is configured globally with `withCredentials = true` to automatically send session cookies with every request.
 
-> 💬 **Socket.io Connection**: The real-time chat feature connects to the local development Socket.io server at `https://localhost:3000`.
+> 💬 **Socket.io Connection**: The real-time chat feature connects to the Socket.io server dynamically using the `VITE_API_BASE_URL` environment variable (defaulting to `http://localhost:3000`) with `withCredentials: true` enabled.
 # ImageKit Credentials
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
@@ -223,7 +225,7 @@ npm run dev
 
 
 ### Real-time Chat
-* The application includes a real-time chat component powered by Socket.io, which utilizes custom socket middleware on the backend and connects to the local development server to handle instant messaging.
+* The application includes a real-time chat component powered by Socket.io, which utilizes custom socket middleware on the backend and connects dynamically to the backend server (via `VITE_API_BASE_URL` or `http://localhost:3000`) with `withCredentials: true` to handle secure instant messaging.
 # Start the server
 
 bash
@@ -325,8 +327,28 @@ Authorization: Bearer <your_jwt_token>
 
 ## 🛡️ Security Implementations
 
-### Cross-Origin Cookie Security
-To support secure cross-origin requests (CORS) and ensure session cookies are transmitted safely between the frontend and backend, the application configures strict cookie options. Both authentication and administrative controllers issue HTTP-only, secure cookies with the `sameSite: "none"` attribute:
+### Cross-Origin Cookie Security & Dynamic CORS
+To support secure cross-origin requests (CORS) and ensure session cookies are transmitted safely between the frontend and backend, the application configures strict cookie options and dynamic origin validation. 
+
+The backend dynamically parses allowed origins from the `CORS_ORIGIN` environment variable alongside default local and production URLs:
+
+javascript
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mini-instagram-eight.vercel.app",
+];
+
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
+    const trimmed = origin.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
+
+Both authentication and administrative controllers issue HTTP-only, secure cookies with the `sameSite: "none"` attribute:
 
 javascript
 const option = {
@@ -336,7 +358,7 @@ const option = {
 };
 
 
-This configuration prevents Client-Side Scripting (XSS) access to tokens while allowing credentials to be sent securely across different origins.
+This configuration prevents Client-Side Scripting (XSS) access to tokens while allowing credentials to be sent securely across different allowed origins.
 
 ### Protected Routes (Frontend)
 The React application utilizes a robust `<ProtectedRoute />` wrapper that intercepts navigation requests, validates the session against the backend API, and handles graceful fallbacks.
