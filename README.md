@@ -51,7 +51,7 @@ A lightweight, high-performance, full-stack social media web application. Built 
 *   **Dynamic Feed & Profiles**: Personalized profile pages, user search, and public profile views.
 *   **Post Creation**: Multi-part form uploads supporting image files via Multer, processed and stored securely in ImageKit.
 *   **Interactive Navigation**: Persistent, responsive sidebar navigation for seamless transitions between Feed, Search, Post Creation, Profile, and Chat.
-*   **Real-Time Chat**: Instant messaging interface powered by Socket.io, featuring a dedicated chat UI with a user sidebar, active chat window, and real-time socket middleware integration.
+*   **Real-Time Chat**: Instant messaging interface powered by Socket.io, featuring a dedicated chat UI with a user sidebar, active chat window, real-time socket middleware integration, and persistent chat user lists saved in local storage.
 *   **Interactive 404 Fallback**: A custom, visually engaging "Not Found" page featuring programmatically drawn canvas animations (astronaut visor and floating cord), interactive stars, and quick navigation fallbacks to direct lost users back to safety.
 
 ### 🛡️ Administrative Capabilities
@@ -228,6 +228,7 @@ npm run dev
 
 ### Real-time Chat
 * The application includes a real-time chat component powered by Socket.io, which utilizes custom socket middleware on the backend and connects dynamically to the backend server (via `VITE_API_BASE_URL` or `http://localhost:3000`) with `withCredentials: true` to handle secure instant messaging.
+* Active chat users are persisted locally using `localStorage`, ensuring that your recent conversations remain accessible even after closing or reloading the browser.
 # Start the server
 
 bash
