@@ -327,25 +327,24 @@ Authorization: Bearer <your_jwt_token>
 
 ## 🛡️ Security Implementations
 
-### Cross-Origin Cookie Security & Dynamic CORS
-To support secure cross-origin requests (CORS) and ensure session cookies are transmitted safely between the frontend and backend, the application configures strict cookie options and dynamic origin validation. 
+### Cross-Origin Cookie Security & Shared CORS Configuration
+To support secure cross-origin requests (CORS) and ensure session cookies and real-time WebSocket connections are transmitted safely, the application uses a consolidated CORS configuration shared between the Express app and Socket.io.
 
-The backend dynamically parses allowed origins from the `CORS_ORIGIN` environment variable alongside default local and production URLs:
+The backend dynamically allows requesting origins with support for credentials, specific HTTP methods, and headers:
 
 javascript
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mini-instagram-eight.vercel.app",
-];
+const corsOptions = {
+  origin: (origin, callback) => callback(null, true),
+  credentials: true,
+  methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-if (process.env.CORS_ORIGIN) {
-  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
-    const trimmed = origin.trim();
-    if (trimmed && !allowedOrigins.includes(trimmed)) {
-      allowedOrigins.push(trimmed);
-    }
-  });
-}
+const io = new Server(server, {
+  cors: corsOptions,
+});
+
+app.use(cors(corsOptions));
 
 
 Both authentication and administrative controllers issue HTTP-only, secure cookies with the `sameSite: "none"` attribute:
@@ -358,7 +357,7 @@ const option = {
 };
 
 
-This configuration prevents Client-Side Scripting (XSS) access to tokens while allowing credentials to be sent securely across different allowed origins.
+This configuration prevents Client-Side Scripting (XSS) access to tokens while allowing credentials to be sent securely across allowed origins for both HTTP REST endpoints and WebSocket connections.
 
 ### Protected Routes (Frontend)
 The React application utilizes a robust `<ProtectedRoute />` wrapper that intercepts navigation requests, validates the session against the backend API, and handles graceful fallbacks.
