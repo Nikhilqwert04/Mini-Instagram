@@ -395,15 +395,21 @@ const ProtectedRoute = () => {
 
 ## 📦 Deployment
 
-### Production Build (Frontend)
+### Production Build & Execution (Frontend)
 To compile the React SPA into optimized, static assets:
 bash
 cd frontend
 npm run build
 
-The output will be generated in the `frontend/dist` directory, ready to be served by Nginx, Apache, or static hosting providers like Vercel or Netlify.
+
+The output will be generated in the `frontend/dist` directory. You can serve the production build locally or in production using the included `serve` script:
+bash
+npm start
+
+This will serve the static files from the `dist` directory on the specified `$PORT` using the `serve` package.
 
 For hosting on **Vercel**, a `vercel.json` configuration is included in the frontend directory to handle Single Page Application (SPA) routing by rewriting all requests to `index.html`:
+
 
 {
   "rewrites": [
