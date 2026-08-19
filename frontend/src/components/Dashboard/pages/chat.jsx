@@ -59,14 +59,14 @@ const Chat = () => {
     FetchUser();
   };
 
-  const Userchat = JSON.parse(sessionStorage.getItem("users") || "[]");
+  const Userchat = JSON.parse(localStorage.getItem("users") || "[]");
 
   const clickUser = async (Username) => {
-    const sessionUsers = JSON.parse(sessionStorage.getItem("users") || "[]");
+    const localUsers = JSON.parse(localStorage.getItem("users") || "[]");
 
-    if (!sessionUsers.some((u) => u.name === Username)) {
-      sessionUsers.push({ name: Username });
-      sessionStorage.setItem("users", JSON.stringify(sessionUsers));
+    if (!localUsers.some((u) => u.name === Username)) {
+      localUsers.push({ name: Username });
+      localStorage.setItem("users", JSON.stringify(localUsers));
     }
 
     setsearch([]);
