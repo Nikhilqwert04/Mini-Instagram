@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 import { Search, Plus, Smile, SendHorizontal } from "lucide-react";
+import { io } from "socket.io-client";
 
 const initialUsers = [];
 
@@ -10,6 +11,38 @@ const Chat = () => {
   const [selectedUser, setselectedUser] = useState(initialUsers[0]);
   const [query, setQuery] = useState("");
   const [search, setsearch] = useState([]);
+  const [messageInput, setMessageInput] = useState("");
+  const [currentRoomId, setCurrentRoomId] = useState(null);
+  const [messages, setMessages] = useState([]);
+
+  const messagesEndRef = useRef(null);
+
+  // Initialize socket connection using useMemo
+  const socket = useMemo(
+    () => io("http://localhost:3000", { withCredentials: true }),
+    [],
+  );
+
+  // Clean up socket connection and register listeners
+  useEffect(() => {
+    // Listen for room joining confirmation and load history
+    socket.on("room_joined", (data) => {
+      console.log("Successfully joined room on backend. History:", data);
+      setMessages(data.messages || []);
+    });
+
+    // Listen for live incoming messages
+    socket.on("message", (newMessage) => {
+      console.log("Live message received:", newMessage);
+      setMessages((prev) => [...prev, newMessage]);
+    });
+
+    return () => {
+      socket.off("room_joined");
+      socket.off("message");
+      socket.disconnect();
+    };
+  }, [socket]);
 
   // Fetch current user details on mount
   useEffect(() => {
@@ -20,6 +53,11 @@ const Chat = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  // Auto-scroll messages to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -55,10 +93,30 @@ const Chat = () => {
         { userId2: recipientId },
         { withCredentials: true },
       );
-      console.log("Chatroom created/retrieved:", chatroomRes.data);
+      const roomId = chatroomRes.data.data._id;
+      console.log("Chatroom created/retrieved ID:", roomId);
+      setCurrentRoomId(roomId);
+
+      // 3. Emit join_room event
+      socket.emit("join_room", { userId2: recipientId });
+
+      // 4. Set selected user to display the chat pane
+      setselectedUser({ name: Username });
     } catch (error) {
       console.log("Error in clickUser:", error);
     }
+  };
+
+  const handleSendMessage = () => {
+    if (!messageInput.trim() || !currentRoomId) return;
+
+    // Send message to the backend via socket
+    socket.emit("sendMessage", {
+      roomId: currentRoomId,
+      message: messageInput.trim(),
+    });
+
+    setMessageInput("");
   };
 
   const FetchUser = async () => {
@@ -129,7 +187,7 @@ const Chat = () => {
           {Userchat.map((user) => (
             <div
               key={user.name}
-              onClick={() => setselectedUser(user)}
+              onClick={() => clickUser(user.name)}
               className={`w-full h-16 rounded-2xl flex items-center p-3 gap-3 cursor-pointer transition-all duration-200 ${
                 selectedUser?.name === user.name
                   ? "bg-zinc-800 border border-zinc-700"
@@ -177,58 +235,24 @@ const Chat = () => {
               </div>
             </div>
 
-            <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-x-auto">
-              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
-                Hello Nikhil1
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2ijhcvdkjfbghekjfvbh
-              </div>
-              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
-                Hello Nikhil1
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2ijhcvdkjfbghekjfvbh
-              </div>
-              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
-                Hello Nikhil1
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2ijhcvdkjfbghekjfvbh
-              </div>
-              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
-                Hello Nikhil1
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2ijhcvdkjfbghekjfvbh
-              </div>
-              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
-                Hello Nikhil1
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                Hello Nikhil2ijhcvdkjfbghekjfvbh
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                kya haal hai
-              </div>
-              <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
-                sab badhiya
-              </div>
+            {/* Messages Display Area */}
+            <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-y-auto">
+              {messages.map((msg) => {
+                const isMe = msg.userId === CurrentUser?._id;
+                return (
+                  <div
+                    key={msg._id}
+                    className={`h-auto w-fit max-w-[70%] p-2.5 rounded-xl ${
+                      isMe
+                        ? "ml-auto bg-[#155EFD] text-white rounded-tr-none"
+                        : "mr-auto bg-[#252427] text-zinc-100 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.message}
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Bottom Message Input Bar */}
@@ -240,12 +264,20 @@ const Chat = () => {
                 <input
                   type="text"
                   placeholder="Message..."
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSendMessage();
+                  }}
                   className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none min-w-0"
                 />
                 <button className="text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0">
                   <Smile size={20} />
                 </button>
-                <button className="text-blue-500 hover:text-blue-400 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0 ml-1">
+                <button
+                  onClick={handleSendMessage}
+                  className="text-blue-500 hover:text-blue-400 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0 ml-1"
+                >
                   <SendHorizontal size={20} />
                 </button>
               </div>
