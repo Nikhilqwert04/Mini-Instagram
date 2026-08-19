@@ -1,3 +1,4 @@
+
 # 📸 Mini-Instagram
 
 A lightweight, full-stack social media platform with a decoupled architecture combining a Node.js/Express backend with a React 19 frontend. Features include secure authentication, real-time chat, and cloud-based image hosting.
@@ -82,30 +83,16 @@ cd Mini-Instagram
 
 # Backend
 cd Backend
-npm install
+npm run dev
 
 # Frontend
 cd ../frontend
-npm install
+npm run dev
 ```
 
-### Configuration
-
-**Backend `.env`**:
-```env
-PORT=3000
-MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/mini-instagram
-JWT_SECRET=your_secret_key
-CORS_ORIGIN=http://localhost:5173
-IMAGEKIT_PUBLIC_KEY=your_public_key
-IMAGEKIT_PRIVATE_KEY=your_private_key
-SMTP_HOST=smtp.mailtrap.io
-```
-
-**Frontend `.env`**:
-```env
-VITE_API_BASE_URL=http://localhost:3000
-```
+**Access at**:
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend API: [http://localhost:3000/api/v1](http://localhost:3000/api/v1)
 
 ---
 
@@ -171,14 +158,11 @@ npm run dev
 3. Use provided `vercel.json` for SPA routing
 
 ### Backend (Render/Heroku)
-1. Set environment variables
+1. Set environment variables (such as `CORS_ORIGIN` to configure allowed origins; `https://insta.nikhilverse.pro` and `http://localhost:5173` are allowed by default)
 2. Deploy with PM2:
-```bash
+bash
 npm install pm2 -g
 pm2 start server.js --no-daemon
-```
-
----
 
 ## ❓ Troubleshooting
 
