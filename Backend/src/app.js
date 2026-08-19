@@ -4,24 +4,48 @@ import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 import verifySocketJWT from "./middlewares/socket.middleware.js";
-import { handlejoinRoom, handleSendMessage, handleDisconnect } from "./controllers/joinroom.controller.js";
+import {
+  handlejoinRoom,
+  handleSendMessage,
+  handleDisconnect,
+} from "./controllers/joinroom.controller.js";
 const app = express();
 
 const server = http.createServer(app);
 
-const corsOptions = {
-  origin: (origin, callback) => callback(null, true),
-  credentials: true,
-  methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mini-instagram-kqlz.onrender.com",
+];
+
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
+    let trimmed = origin.trim();
+    if (trimmed.endsWith("/")) {
+      trimmed = trimmed.slice(0, -1);
+    }
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
 
 const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
 });
 
 app.use(cookieParse());
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.use(express.json());
 
