@@ -161,13 +161,12 @@ npm run dev
 ## 🔐 Security
 
 - **Authentication**: JWT + HttpOnly cookies with `SameSite=None; Secure`
-- **CORS**: Configurable origins with credentials support
+- **CORS**: Configurable origins with credentials support and explicit HTTP method filtering (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, `HEAD`)
 - **Socket.io**: Secure WebSocket connections with middleware
 - **Validation**: Request validation via Joi schemas
 - **Email Verification**: Nodemailer + Mailgen for transactional emails
 
 ---
-
 ## 📦 Deployment
 
 ### Frontend (Vercel)
