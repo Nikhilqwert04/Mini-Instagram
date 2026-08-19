@@ -9,39 +9,19 @@ const app = express();
 
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mini-instagram-eight.vercel.app",
-];
-
-if (process.env.CORS_ORIGIN) {
-  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
-    let trimmed = origin.trim();
-    if (trimmed.endsWith("/")) {
-      trimmed = trimmed.slice(0, -1);
-    }
-    if (trimmed && !allowedOrigins.includes(trimmed)) {
-      allowedOrigins.push(trimmed);
-    }
-  });
-}
+const corsOptions = {
+  origin: (origin, callback) => callback(null, true),
+  credentials: true,
+  methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 app.use(cookieParse());
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
