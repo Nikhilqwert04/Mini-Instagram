@@ -174,9 +174,11 @@ PORT=3000
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/mini-instagram?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_jwt_key_here
 ACCESS_TOKEN_EXPIRY=1d
-CORS_ORIGIN=http://localhost:5173,https://mini-instagram-eight.vercel.app
+CORS_ORIGIN=https://mini-instagram-eight.vercel.app,https://another-allowed-origin.com
 FRONTEND_URL=http://localhost:5173
 
+
+> 💡 **Note on CORS_ORIGIN**: You can provide a comma-separated list of allowed origins. The backend dynamically parses, trims trailing slashes, and appends them to the default allowed origins (`http://localhost:5173` and `https://mini-instagram-kqlz.onrender.com`).
 
 #### Frontend Configuration
 Create a `.env` file in the `/frontend` directory:
@@ -330,21 +332,41 @@ Authorization: Bearer <your_jwt_token>
 ### Cross-Origin Cookie Security & Shared CORS Configuration
 To support secure cross-origin requests (CORS) and ensure session cookies and real-time WebSocket connections are transmitted safely, the application uses a consolidated CORS configuration shared between the Express app and Socket.io.
 
-The backend dynamically allows requesting origins with support for credentials, specific HTTP methods, and headers:
+The backend dynamically parses allowed origins from the environment configuration, sanitizes trailing slashes, and registers them for both HTTP REST endpoints and WebSocket connections:
 
 javascript
-const corsOptions = {
-  origin: (origin, callback) => callback(null, true),
-  credentials: true,
-  methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mini-instagram-kqlz.onrender.com",
+];
+
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
+    let trimmed = origin.trim();
+    if (trimmed.endsWith("/")) {
+      trimmed = trimmed.slice(0, -1);
+    }
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
 
 const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
 });
 
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 
 Both authentication and administrative controllers issue HTTP-only, secure cookies with the `sameSite: "none"` attribute:
