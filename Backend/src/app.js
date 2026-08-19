@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mini-instagram-kqlz.onrender.com",
+  "https://insta.nikhilverse.pro",
 ];
 
 if (process.env.CORS_ORIGIN) {
