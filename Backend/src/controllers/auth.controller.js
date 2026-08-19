@@ -53,12 +53,14 @@ const register = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
   await sendMail({
     email: user?.email,
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailGenContent(
       user.username,
-      `http://localhost:5173/verify-email/${unHashedToken}`,
+      `${frontendUrl}/verify-email/${unHashedToken}`,
     ),
   });
 
@@ -214,12 +216,14 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
   await sendMail({
     email: user?.email,
     subject: "Password Reset Request",
     mailgenContent: forgotPasswordMailGenContent(
       user.username,
-      `http://localhost:5173/reset-password/${unHashedToken}`,
+      `${frontendUrl}/reset-password/${unHashedToken}`,
     ),
   });
 
@@ -296,6 +300,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "none",
     };
 
     const { accessToken, refreshToken: newRefreshToken } =
@@ -351,6 +356,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    sameSite: "none",
   };
 
   return res

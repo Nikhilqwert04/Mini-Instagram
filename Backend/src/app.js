@@ -8,12 +8,24 @@ import { handlejoinRoom, handleSendMessage, handleDisconnect } from "./controlle
 const app = express();
 
 const server = http.createServer(app);
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mini-instagram-eight.vercel.app",
+];
+
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(",").forEach((origin) => {
+    const trimmed = origin.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://mini-instagram-eight.vercel.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   },
 });
@@ -21,10 +33,7 @@ const io = new Server(server, {
 app.use(cookieParse());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://mini-instagram-eight.vercel.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
     methods: ["PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

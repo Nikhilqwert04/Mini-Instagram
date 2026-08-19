@@ -18,7 +18,10 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   const socket = useMemo(
-    () => io("http://localhost:3000", { withCredentials: true }),
+    () =>
+      io(import.meta.env.VITE_API_BASE_URL || "http://localhost:3000", {
+        withCredentials: true,
+      }),
     [],
   );
 
