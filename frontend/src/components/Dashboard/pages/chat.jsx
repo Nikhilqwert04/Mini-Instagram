@@ -31,7 +31,7 @@ const Chat = () => {
     });
 
     socket.on("message", (newMessage) => {
-      setMessages([...messages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
@@ -39,7 +39,7 @@ const Chat = () => {
       socket.off("message");
       socket.disconnect();
     };
-  }, [socket, messages]);
+  }, [socket]);
 
   useEffect(() => {
     axios
