@@ -16,7 +16,10 @@ const allowedOrigins = [
 
 if (process.env.CORS_ORIGIN) {
   process.env.CORS_ORIGIN.split(",").forEach((origin) => {
-    const trimmed = origin.trim();
+    let trimmed = origin.trim();
+    if (trimmed.endsWith("/")) {
+      trimmed = trimmed.slice(0, -1);
+    }
     if (trimmed && !allowedOrigins.includes(trimmed)) {
       allowedOrigins.push(trimmed);
     }
