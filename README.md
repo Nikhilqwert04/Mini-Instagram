@@ -44,19 +44,22 @@ React SPA (Vite/Tailwind) ↔ Express API (Node.js) ↔ MongoDB
 ## ✨ Features
 
 ### 👤 User Features
-- Secure authentication (signup/signin, email verification)
-- Dynamic feed with profile navigation
-- Image post creation via ImageKit
-- Real-time chat with Socket.io
-- Responsive dark-themed UI
+- **Secure Authentication**: Signup, signin, and secure token management (`accessToken`, `adminToken`).
+- **Dynamic Feed & Profiles**: Custom user profiles, banners, and post counts.
+- **Post Creation**: Drag-and-drop image uploader with captioning and visibility controls (Public/Private).
+- **Real-Time Chat**: Socket.io-powered messaging with a responsive layout that toggles between chat list and active conversation on mobile.
+- **Responsive Dark-Themed UI**: Fully optimized for desktop, tablet, and mobile devices with dedicated top headers and bottom navigation bars.
 
 ### 🛡️ Admin Features
-- Admin authentication portal
-- User management dashboard
-- Platform analytics overview
+- **Admin Authentication Portal**: Dedicated secure login for platform administrators.
+- **User Management Dashboard**: 
+  - Search users dynamically by username or full name.
+  - Moderate accounts with real-time block/unblock actions.
+  - View user post counts and profile details.
+  - Responsive card-based list view for mobile and structured table view for desktop.
+- **Platform Analytics Overview**: High-level insights and statistics.
 
 ---
-
 ## 🛠️ Tech Stack
 
 | Layer | Technologies |
@@ -99,7 +102,22 @@ npm run dev
 ## 💻 Usage
 
 ### Start Development
-```bash
+
+#### 1. Run the Backend Server
+bash
+cd Backend
+npm install
+npm run dev
+
+
+#### 2. Run the Frontend App
+bash
+cd frontend
+npm install
+npm run dev
+
+
+---
 # Backend
 cd Backend
 npm run dev
