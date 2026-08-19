@@ -20,7 +20,7 @@ const MyPosts = () => {
     fetchpost()
   },[])
   return (
-    <div className="max-w-6xl mx-auto mt-6">
+    <div className="max-w-6xl mx-auto mt-6 px-4 md:px-0">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-white">My Posts</h1>
         <span className="text-xs font-semibold text-zinc-400 bg-zinc-800 px-3 py-1.5 rounded-full border border-zinc-700">

@@ -25,8 +25,8 @@ const Search = () => {
     }
   };
   return (
-    <div className="max-w-2xl mx-auto mt-6">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+    <div className="max-w-2xl mx-auto mt-6 px-4 md:px-0">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl">
         <h1 className="text-2xl font-bold text-white mb-6">Search</h1>
 
         <form onSubmit={handleSearch} className="flex items-center gap-3">

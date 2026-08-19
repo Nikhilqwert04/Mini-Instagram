@@ -112,93 +112,163 @@ const AdminUsers = () => {
               No users found matching your search.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-800 text-zinc-400 text-xs font-semibold uppercase tracking-wider">
-                    <th className="px-6 py-4">User</th>
-                    <th className="px-6 py-4">Posts</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {filteredUsers.map((user) => (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-zinc-800/20 transition-colors group"
-                    >
-                      {/* User Info */}
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-zinc-800 ring-2 ring-zinc-700/50 flex items-center justify-center font-bold text-zinc-300">
-                            {user.username.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="text-sm font-bold text-white group-hover:text-red-400 transition-colors">
-                              @{user.username}
+            <div>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-zinc-800 text-zinc-400 text-xs font-semibold uppercase tracking-wider">
+                      <th className="px-6 py-4">User</th>
+                      <th className="px-6 py-4">Posts</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800/60">
+                    {filteredUsers.map((user) => (
+                      <tr
+                        key={user._id}
+                        className="hover:bg-zinc-800/20 transition-colors group"
+                      >
+                        {/* User Info */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-zinc-800 ring-2 ring-zinc-700/50 flex items-center justify-center font-bold text-zinc-300">
+                              {user.username.charAt(0).toUpperCase()}
                             </div>
-                            <div className="text-xs text-zinc-400">
-                              {user.fullName}
+                            <div>
+                              <div className="text-sm font-bold text-white group-hover:text-red-400 transition-colors">
+                                @{user.username}
+                              </div>
+                              <div className="text-xs text-zinc-400">
+                                {user.fullName}
+                              </div>
                             </div>
                           </div>
+                        </td>
+
+                        {/* Post Count */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-300 font-medium">
+                          {user.postcount} {user.postcount === 1 ? "post" : "posts"}
+                        </td>
+
+                        {/* Account Status */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {user.isBlocked ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                              Blocked
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              Active
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Action buttons */}
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => navigate(`/admindash/user/${user.username}`)}
+                              className="px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border border-zinc-700"
+                            >
+                              View
+                            </button>
+
+                            <button
+                              onClick={() => handleToggleBlock(user)}
+                              disabled={actionLoading[user._id]}
+                              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center ${
+                                user.isBlocked
+                                  ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30"
+                                  : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30"
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              {actionLoading[user._id] ? (
+                                <svg className="animate-spin h-3.5 w-3.5 text-current" viewBox="0 0 24 24" fill="none">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                </svg>
+                              ) : user.isBlocked ? (
+                                "Unblock"
+                              ) : (
+                                "Block"
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card List View */}
+              <div className="block md:hidden divide-y divide-zinc-800/60">
+                {filteredUsers.map((user) => (
+                  <div key={user._id} className="p-4 flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-zinc-800 ring-2 ring-zinc-700/50 flex items-center justify-center font-bold text-zinc-300">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold text-white">
+                          @{user.username}
                         </div>
-                      </td>
-
-                      {/* Post Count */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-300 font-medium">
-                        {user.postcount} {user.postcount === 1 ? "post" : "posts"}
-                      </td>
-
-                      {/* Account Status */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-xs text-zinc-400">
+                          {user.fullName}
+                        </div>
+                      </div>
+                      <div>
                         {user.isBlocked ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
                             Blocked
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             Active
                           </span>
                         )}
-                      </td>
+                      </div>
+                    </div>
 
-                      {/* Action buttons */}
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => navigate(`/admindash/user/${user.username}`)}
-                            className="px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border border-zinc-700"
-                          >
-                            View
-                          </button>
+                    <div className="flex items-center justify-between border-t border-zinc-800/40 pt-3">
+                      <span className="text-xs text-zinc-400">
+                        {user.postcount} {user.postcount === 1 ? "post" : "posts"}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/admindash/user/${user.username}`)}
+                          className="px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border border-zinc-700 shadow-sm"
+                        >
+                          View
+                        </button>
 
-                          <button
-                            onClick={() => handleToggleBlock(user)}
-                            disabled={actionLoading[user._id]}
-                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center ${
-                              user.isBlocked
-                                ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30"
-                                : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30"
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
-                          >
-                            {actionLoading[user._id] ? (
-                              <svg className="animate-spin h-3.5 w-3.5 text-current" viewBox="0 0 24 24" fill="none">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
-                            ) : user.isBlocked ? (
-                              "Unblock"
-                            ) : (
-                              "Block"
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <button
+                          onClick={() => handleToggleBlock(user)}
+                          disabled={actionLoading[user._id]}
+                          className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center ${
+                            user.isBlocked
+                              ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30"
+                              : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30"
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {actionLoading[user._id] ? (
+                            <svg className="animate-spin h-3.5 w-3.5 text-current" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                          ) : user.isBlocked ? (
+                            "Unblock"
+                          ) : (
+                            "Block"
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

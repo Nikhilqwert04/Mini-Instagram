@@ -30,14 +30,14 @@ const loginpage = () => {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center font-sans text-white">
+    <div className="relative min-h-screen w-full overflow-y-auto flex items-center justify-center font-sans text-white py-12 md:py-0">
       <img
         src="LoginB.png"
         alt="Background Image"
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full object-cover z-0 fixed"
       />
 
-      <div className="relative z-10 w-full max-w-4xl min-h-[500px] bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl shadow-2xl p-10 flex flex-col md:flex-row gap-8 mx-4">
+      <div className="relative z-10 w-full max-w-4xl min-h-[500px] bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col md:flex-row gap-8 mx-4 my-8 md:my-0">
         <div className="flex-1 flex flex-col justify-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">
             Mini
@@ -131,6 +131,21 @@ const loginpage = () => {
                 "Sign up"
               )}
             </button>
+
+            <div className="flex flex-col gap-2 mt-4 text-center md:hidden border-t border-white/10 pt-4">
+              <p className="text-xs text-white/70">
+                Already have an account?{" "}
+                <a href="/signin" className="text-pink-400 hover:text-pink-300 hover:underline font-bold transition-colors">
+                  Sign In
+                </a>
+              </p>
+              <p className="text-xs text-white/70">
+                Are you an admin?{" "}
+                <a href="/admin" className="text-cyan-400 hover:text-cyan-300 hover:underline font-bold transition-colors">
+                  Admin Panel
+                </a>
+              </p>
+            </div>
           </form>
         </div>
 

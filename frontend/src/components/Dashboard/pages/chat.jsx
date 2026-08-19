@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
-import { Search, Plus, Smile, SendHorizontal } from "lucide-react";
+import { Search, Plus, Smile, SendHorizontal, ArrowLeft } from "lucide-react";
 import { io } from "socket.io-client";
 
 const initialUsers = [];
@@ -114,27 +114,37 @@ const Chat = () => {
     } catch (error) {}
   };
 
+  const handleBackToList = () => {
+    setselectedUser(null);
+    setotherUser(null);
+    setCurrentRoomId(null);
+  };
+
   return (
     <div className="flex h-full gap-4 text-zinc-100 font-sans">
-      <div className="bg-[#171719] w-[30%] h-full rounded-xl flex flex-col p-4 divide-y divide-dashed divide-zinc-800">
+      <div className={`bg-[#171719] rounded-xl flex flex-col p-4 divide-y divide-dashed divide-zinc-800 ${
+        selectedUser ? "hidden md:flex md:w-[35%] lg:w-[30%]" : "w-full md:w-[35%] lg:w-[30%]"
+      }`}>
         <div className="flex flex-col gap-3 pb-4">
           <div className="text-2xl font-bold">Message</div>
           <div className="flex flex-col relative gap-2 items-center">
-            <form onSubmit={handleSearch}>
-              <Search
-                className="absolute z-4 top-[8px] left-[10px]"
-                size={"18px"}
-              />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search User"
-                className="w-full h-9 p-3 pl-12 rounded-lg bg-[#232324]"
-              />
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative w-full">
+                <Search
+                  className="absolute z-4 top-[9px] left-[10px] text-zinc-400"
+                  size={"18px"}
+                />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search User"
+                  className="w-full h-9 p-3 pl-12 rounded-lg bg-[#232324] text-sm text-white placeholder-zinc-500 focus:outline-none"
+                />
+              </div>
               <button
                 type="submit"
-                className="px-6 py-3.5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shrink-0 mt-3"
+                className="px-6 py-2.5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shrink-0 mt-3"
               >
                 Search
               </button>
@@ -144,7 +154,7 @@ const Chat = () => {
                 <div
                   key={user.username}
                   onClick={() => clickUser(user.username)}
-                  className="w-full h-16 rounded-2xl flex items-center p-3 gap-3 cursor-pointer transition-all duration-200"
+                  className="w-full h-16 rounded-2xl flex items-center p-3 gap-3 cursor-pointer transition-all duration-200 hover:bg-zinc-800/40"
                 >
                   <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-blue-500/20">
                     <img
@@ -166,7 +176,7 @@ const Chat = () => {
             </div>
           </div>
         </div>
-        <div className="pt-4 flex flex-col gap-3">
+        <div className="pt-4 flex flex-col gap-3 overflow-y-auto flex-1">
           {Userchat.map((user) => (
             <div
               key={user.name}
@@ -195,10 +205,19 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="bg-[#171719] w-[70%] h-full rounded-xl relative overflow-hidden">
+      <div className={`bg-[#171719] rounded-xl relative overflow-hidden flex-1 ${
+        !selectedUser ? "hidden md:block md:w-[65%] lg:w-[70%]" : "w-full md:w-[65%] lg:w-[70%]"
+      }`}>
         {selectedUser ? (
           <>
-            <div className="bg-[#232324]/60 border-b border-zinc-800/80 w-full h-18 absolute flex items-center px-4 gap-3 backdrop-blur-sm">
+            <div className="bg-[#232324]/60 border-b border-zinc-800/80 w-full h-18 absolute flex items-center px-4 gap-3 backdrop-blur-sm z-10">
+              <button
+                onClick={handleBackToList}
+                className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                title="Back to Messages"
+              >
+                <ArrowLeft size={20} />
+              </button>
               <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-blue-500/20">
                 <img
                   className="w-full h-full object-cover"
@@ -216,7 +235,7 @@ const Chat = () => {
               </div>
             </div>
 
-            <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-y-auto">
+            <div className="h-full w-full pb-22 pt-20 pl-4 pr-4 flex flex-col gap-3 overflow-y-auto">
               {messages.map((msg) => {
                 const isMe = msg.userId === CurrentUser?._id;
                 return (

@@ -132,26 +132,28 @@ const Notfound = () => {
       <div className="absolute w-[5px] h-[5px] rounded-full bg-gray-400 rotate-[250deg] opacity-40 animate-shimmer top-[20%] left-[30%]" style={{ animationDelay: "0.5s" }}></div>
 
       {/* Error Info */}
-      <div className="absolute left-[100px] top-[400px] -translate-y-[60%] font-['Righteous',cursive] text-[#363e49]">
-        <div className="text-[10em] leading-none">404</div>
-        <div className="text-[2em] leading-normal">Hmmm...</div>
-        <div className="text-[1em] opacity-50">It looks like one of the developers fell asleep</div>
-        <button
-          onClick={handleLogin}
-          className="min-w-[7em] mt-[3em] mr-[0.5em] py-[0.5em] px-[2em] outline-none border-2 border-[#e67e22] bg-[#e67e22] text-white rounded-[8em] cursor-pointer transition-all duration-200 text-[0.75em] font-['Righteous',cursive] hover:shadow-[0_0_8px_0_rgba(0,0,0,0.5)] hover:text-white"
-        >
-          LOGIN
-        </button>
-        <button
-          onClick={handleContact}
-          className="min-w-[7em] mt-[3em] mr-[0.5em] py-[0.5em] px-[2em] outline-none border-2 border-[#2f3640] bg-transparent text-[#576375] rounded-[8em] cursor-pointer transition-all duration-200 text-[0.75em] font-['Righteous',cursive] hover:text-[#21252c] hover:border-[#21252c]"
-        >
-          CONTACT
-        </button>
+      <div className="absolute left-6 md:left-[100px] top-[45%] md:top-[400px] -translate-y-1/2 md:-translate-y-[60%] font-['Righteous',cursive] text-[#363e49] max-w-[calc(100%-48px)] md:max-w-md z-10">
+        <div className="text-[6em] md:text-[10em] leading-none">404</div>
+        <div className="text-[1.5em] md:text-[2em] leading-normal">Hmmm...</div>
+        <div className="text-sm md:text-[1em] opacity-50">It looks like one of the developers fell asleep</div>
+        <div className="flex flex-wrap gap-3 mt-[2em] md:mt-[3em]">
+          <button
+            onClick={handleLogin}
+            className="min-w-[7em] py-[0.5em] px-[2em] outline-none border-2 border-[#e67e22] bg-[#e67e22] text-white rounded-[8em] cursor-pointer transition-all duration-200 text-[0.75em] font-['Righteous',cursive] hover:shadow-[0_0_8px_0_rgba(0,0,0,0.5)] hover:text-white"
+          >
+            LOGIN
+          </button>
+          <button
+            onClick={handleContact}
+            className="min-w-[7em] py-[0.5em] px-[2em] outline-none border-2 border-[#2f3640] bg-transparent text-[#576375] rounded-[8em] cursor-pointer transition-all duration-200 text-[0.75em] font-['Righteous',cursive] hover:text-[#21252c] hover:border-[#21252c]"
+          >
+            CONTACT
+          </button>
+        </div>
       </div>
 
       {/* Astronaut */}
-      <div className="absolute w-[185px] h-[300px] left-[70%] top-[50%] -translate-x-1/2 -translate-y-1/2 rotate-[20deg] scale-[1.2]">
+      <div className="hidden md:block absolute w-[185px] h-[300px] left-[70%] top-[50%] -translate-x-1/2 -translate-y-1/2 rotate-[20deg] scale-[1.2]">
         <div className="absolute top-[90px] left-[47px] w-[86px] h-[90px] bg-[#bfbfbf] rounded-[8px]"></div>
         <div className="absolute top-[115px] left-[55px] w-[70px] h-[80px] bg-[#e6e6e6] rounded-[8px]"></div>
         <div className="absolute top-[140px] left-[68px] w-[45px] h-[25px] bg-[#d9d9d9] rounded-[6px]"></div>

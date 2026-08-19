@@ -70,25 +70,25 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-6">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl flex flex-col">
+    <div className="max-w-6xl mx-auto mt-6 px-4 md:px-0">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-4 sm:p-8 shadow-2xl flex flex-col">
         <h1 className="text-2xl font-bold text-white mb-6">Create Post</h1>
 
         <div>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-8">
             {/* Left Column - Upload File (Preserving your exact UI & code) */}
             <div className="flex-1">
-              <h4>Upload File</h4>
+              <h4 className="text-sm font-semibold text-zinc-300 mb-2">Upload File</h4>
               <label htmlFor="upload" className="cursor-pointer">
                 <div
-                  className={`w-full h-110 flex justify-center items-center border-2 border-dashed rounded-2xl border-[#3d3737c5] overflow-auto ${
+                  className={`w-full h-60 sm:h-96 md:h-110 flex justify-center items-center border-2 border-dashed rounded-2xl border-[#3d3737c5] overflow-auto ${
                     isDragON ? "bg-[#534646]" : "bg-transparent"
                   }`}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onDragLeave={handleonDrageleave}
                 >
-                  {image ? <img src={image} /> : <p>Upload Image</p>}
+                  {image ? <img src={image} className="max-h-full object-contain" /> : <p className="text-zinc-500 text-sm">Upload Image</p>}
                   <input
                     type="file"
                     accept="image/*"

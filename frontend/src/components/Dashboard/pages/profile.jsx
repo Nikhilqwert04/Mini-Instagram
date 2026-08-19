@@ -30,7 +30,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-6">
+    <div className="max-w-2xl mx-auto mt-6 px-4 md:px-0">
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
         <div className="h-48 w-full">
           <img

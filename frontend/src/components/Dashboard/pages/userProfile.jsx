@@ -25,7 +25,7 @@ const UserProfile = () => {
   }, [username]);
 
   return (
-    <div className="max-w-2xl mx-auto mt-6">
+    <div className="max-w-2xl mx-auto mt-6 px-4 md:px-0">
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
         <div className="h-48 w-full bg-gradient-to-br from-blue-600/40 via-purple-600/30 to-zinc-900"></div>
 
@@ -68,7 +68,7 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto mt-6">
+      <div className="max-w-6xl mx-auto mt-6 px-4 md:px-0">
         <div className="flex items-center justify-between mb-8">
          <h1 className="text-2xl font-bold text-white">My Posts</h1>
           <span className="text-xs font-semibold text-zinc-400 bg-zinc-800 px-3 py-1.5 rounded-full border border-zinc-700">
