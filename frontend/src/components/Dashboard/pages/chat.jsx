@@ -2,10 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Plus, Smile, SendHorizontal } from "lucide-react";
 
-const users = [];
+const initialUsers = [];
 
 const Chat = () => {
+  const [otherUser, setotherUser] = useState(null);
   const [CurrentUser, setCurrentUser] = useState(null);
+  const [selectedUser, setselectedUser] = useState(initialUsers[0]);
+  const [query, setQuery] = useState("");
+  const [search, setsearch] = useState([]);
+
+  // Fetch current user details on mount
   useEffect(() => {
     axios
       .get("/api/v1/auth/current-user", { withCredentials: true })
@@ -14,36 +20,44 @@ const Chat = () => {
       })
       .catch((err) => console.log(err));
   }, []);
-  const [selectedUser, setselectedUser] = useState(users[0]);
-  const [query, setQuery] = useState("");
-  const [search, setsearch] = useState([]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Searching for:", query);
-
     FetchUser();
   };
+
   const Userchat = JSON.parse(sessionStorage.getItem("users") || "[]");
 
   const clickUser = async (Username) => {
-    let users = JSON.parse(sessionStorage.getItem("users") || "[]");
+    const sessionUsers = JSON.parse(sessionStorage.getItem("users") || "[]");
 
-    users.push({
-      name: Username,
-    });
+    if (!sessionUsers.some((u) => u.name === Username)) {
+      sessionUsers.push({ name: Username });
+      sessionStorage.setItem("users", JSON.stringify(sessionUsers));
+    }
 
-    sessionStorage.setItem("users", JSON.stringify(users));
     setsearch([]);
     setQuery("");
 
-    try{
-      const data = await axios.get(`/api/v1/post/search/${Username}`,{
-        withCredentials:true,
-      })
-      console.log(data.data.data.otherUser._id)
-    }
-    catch(error){
-      console.log(error)
+    try {
+      // 1. Fetch other user's ID
+      const userRes = await axios.get(`/api/v1/post/search/${Username}`, {
+        withCredentials: true,
+      });
+      const recipientId =
+        userRes.data.data.otherUser._id || userRes.data.data.otherUser.id;
+      setotherUser(recipientId);
+
+      // 2. Fetch or Create Chatroom (Send as JSON payload)
+      const chatroomRes = await axios.post(
+        "/api/v1/room/chatroom",
+        { userId2: recipientId },
+        { withCredentials: true },
+      );
+      console.log("Chatroom created/retrieved:", chatroomRes.data);
+    } catch (error) {
+      console.log("Error in clickUser:", error);
     }
   };
 
@@ -79,12 +93,12 @@ const Chat = () => {
               />
               <button
                 type="submit"
-                className="px-6 py-3.5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shrink-0 mt-3 "
+                className="px-6 py-3.5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-lg shrink-0 mt-3"
               >
                 Search
               </button>
             </form>
-            <div className=" h-auto w-full rounded-2xl">
+            <div className="h-auto w-full rounded-2xl">
               {search.map((user) => (
                 <div
                   key={user.username}
@@ -164,7 +178,7 @@ const Chat = () => {
             </div>
 
             <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-x-auto">
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
                 Hello Nikhil1
               </div>
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
@@ -173,7 +187,7 @@ const Chat = () => {
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
                 Hello Nikhil2ijhcvdkjfbghekjfvbh
               </div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
                 Hello Nikhil1
               </div>
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
@@ -182,7 +196,7 @@ const Chat = () => {
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
                 Hello Nikhil2ijhcvdkjfbghekjfvbh
               </div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
                 Hello Nikhil1
               </div>
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
@@ -191,7 +205,7 @@ const Chat = () => {
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
                 Hello Nikhil2ijhcvdkjfbghekjfvbh
               </div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
                 Hello Nikhil1
               </div>
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
@@ -200,7 +214,7 @@ const Chat = () => {
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
                 Hello Nikhil2ijhcvdkjfbghekjfvbh
               </div>
-              <div className="h-auto w-fit  p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
+              <div className="h-auto w-fit p-2 rounded-l-xl rounded-t-xl ml-auto bg-[#155EFD]">
                 Hello Nikhil1
               </div>
               <div className="h-auto w-fit p-2 rounded-r-xl rounded-b-xl mr-auto bg-[#252427]">
