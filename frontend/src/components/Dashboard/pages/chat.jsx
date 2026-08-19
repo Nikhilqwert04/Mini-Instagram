@@ -17,24 +17,18 @@ const Chat = () => {
 
   const messagesEndRef = useRef(null);
 
-  // Initialize socket connection using useMemo
   const socket = useMemo(
     () => io("http://localhost:3000", { withCredentials: true }),
     [],
   );
 
-  // Clean up socket connection and register listeners
   useEffect(() => {
-    // Listen for room joining confirmation and load history
     socket.on("room_joined", (data) => {
-      console.log("Successfully joined room on backend. History:", data);
       setMessages(data.messages || []);
     });
 
-    // Listen for live incoming messages
     socket.on("message", (newMessage) => {
-      console.log("Live message received:", newMessage);
-      setMessages((prev) => [...prev, newMessage]);
+      setMessages([...messages, newMessage]);
     });
 
     return () => {
@@ -42,26 +36,23 @@ const Chat = () => {
       socket.off("message");
       socket.disconnect();
     };
-  }, [socket]);
+  }, [socket, messages]);
 
-  // Fetch current user details on mount
   useEffect(() => {
     axios
       .get("/api/v1/auth/current-user", { withCredentials: true })
       .then((res) => {
         setCurrentUser(res.data.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   }, []);
 
-  // Auto-scroll messages to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Searching for:", query);
     FetchUser();
   };
 
@@ -79,7 +70,6 @@ const Chat = () => {
     setQuery("");
 
     try {
-      // 1. Fetch other user's ID
       const userRes = await axios.get(`/api/v1/post/search/${Username}`, {
         withCredentials: true,
       });
@@ -87,30 +77,23 @@ const Chat = () => {
         userRes.data.data.otherUser._id || userRes.data.data.otherUser.id;
       setotherUser(recipientId);
 
-      // 2. Fetch or Create Chatroom (Send as JSON payload)
       const chatroomRes = await axios.post(
         "/api/v1/room/chatroom",
         { userId2: recipientId },
         { withCredentials: true },
       );
       const roomId = chatroomRes.data.data._id;
-      console.log("Chatroom created/retrieved ID:", roomId);
       setCurrentRoomId(roomId);
 
-      // 3. Emit join_room event
       socket.emit("join_room", { userId2: recipientId });
 
-      // 4. Set selected user to display the chat pane
       setselectedUser({ name: Username });
-    } catch (error) {
-      console.log("Error in clickUser:", error);
-    }
+    } catch (error) {}
   };
 
   const handleSendMessage = () => {
     if (!messageInput.trim() || !currentRoomId) return;
 
-    // Send message to the backend via socket
     socket.emit("sendMessage", {
       roomId: currentRoomId,
       message: messageInput.trim(),
@@ -125,14 +108,11 @@ const Chat = () => {
         withCredentials: true,
       });
       setsearch(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return (
     <div className="flex h-full gap-4 text-zinc-100 font-sans">
-      {/* Sidebar List */}
       <div className="bg-[#171719] w-[30%] h-full rounded-xl flex flex-col p-4 divide-y divide-dashed divide-zinc-800">
         <div className="flex flex-col gap-3 pb-4">
           <div className="text-2xl font-bold">Message</div>
@@ -212,11 +192,9 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Active Chat Window */}
       <div className="bg-[#171719] w-[70%] h-full rounded-xl relative overflow-hidden">
         {selectedUser ? (
           <>
-            {/* Header Navbar */}
             <div className="bg-[#232324]/60 border-b border-zinc-800/80 w-full h-18 absolute flex items-center px-4 gap-3 backdrop-blur-sm">
               <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-blue-500/20">
                 <img
@@ -235,7 +213,6 @@ const Chat = () => {
               </div>
             </div>
 
-            {/* Messages Display Area */}
             <div className="h-full w-full pb-22 p pl-4 pr-4 flex flex-col gap-3 overflow-y-auto">
               {messages.map((msg) => {
                 const isMe = msg.userId === CurrentUser?._id;
@@ -255,7 +232,6 @@ const Chat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Bottom Message Input Bar */}
             <div className="absolute bottom-0 left-0 w-full p-4 bg-[#171719] border-t border-zinc-800/40">
               <div className="flex items-center gap-3 bg-[#232324] border border-zinc-800/80 focus-within:border-zinc-700/80 rounded-2xl px-4 py-2.5 transition-all duration-200">
                 <button className="text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0">
