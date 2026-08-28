@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { StatefulButton } from "@/components/ui/stateful-button";
 const Loginpage = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
-  const [loading, setloading] = useState(false);
+  const [status, setStatus] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const SubmitHandler = async (e) => {
     e.preventDefault();
-    setloading(true);
+    setStatus("loading");
     setErrorMsg("");
 
     try {
@@ -25,14 +25,14 @@ const Loginpage = () => {
           withCredentials: true,
         }
       );
-        navigate("/dashboard");
+      setStatus("success");
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (error) {
       console.log(error.response?.data || error.message);
       setErrorMsg(
         error.response?.data?.message || "Invalid credentials or login failed"
       );
-    } finally {
-      setloading(false);
+      setStatus("error");
     }
   };
 
@@ -64,7 +64,7 @@ const Loginpage = () => {
               type="email"
               placeholder="Email"
               value={email}
-              disabled={loading}
+              disabled={status !== "idle"}
               onChange={(e) => {
                 setemail(e.target.value);
               }}
@@ -74,7 +74,7 @@ const Loginpage = () => {
               type="password"
               placeholder="Password"
               value={password}
-              disabled={loading}
+              disabled={status !== "idle"}
               onChange={(e) => {
                 setpassword(e.target.value);
               }}
@@ -86,39 +86,18 @@ const Loginpage = () => {
               <div className="h-1.5 w-16 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
             </div>
 
-            <button
+            <StatefulButton
               type="submit"
-              disabled={loading}
-              className="w-full mt-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-pink-500 to-cyan-400 hover:opacity-90 transition-opacity shadow-[0_4px_14px_0_rgba(34,211,238,0.39)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              status={status}
+              onReset={() => setStatus("idle")}
+              disabled={status !== "idle"}
+              loadingText="Signing in..."
+              successText="Signed in!"
+              errorText="Error"
+              className="w-full mt-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-pink-500 to-cyan-400 hover:opacity-90 transition-opacity shadow-[0_4px_14px_0_rgba(34,211,238,0.39)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-0"
             >
-              {loading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </button>
+              Sign in
+            </StatefulButton>
 
             <div className="flex flex-col gap-2 mt-4 text-center md:hidden border-t border-white/10 pt-4">
               <p className="text-xs text-white/70">

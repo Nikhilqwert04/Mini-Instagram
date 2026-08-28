@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { StatefulButton } from "@/components/ui/stateful-button";
 import { User, PlusSquare, Search, Image, MessageSquare, LogOut } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const [status, setStatus] = useState("idle");
 
   const linkStyle = ({ isActive }) =>
     `block px-4 py-3 rounded-lg transition ${
@@ -17,6 +20,7 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
+      setStatus("loading");
       const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
       await axios.post(
         "/api/v1/auth/logout",
@@ -26,12 +30,20 @@ const Sidebar = () => {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
+      setStatus("success");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        navigate("/signin");
+      }, 800);
     } catch (err) {
       console.log("Logout error:", err?.message);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("accessToken");
-      navigate("/signin");
+      setStatus("error");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        navigate("/signin");
+      }, 800);
     }
   };
 
@@ -42,13 +54,17 @@ const Sidebar = () => {
         <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
           Mini Instagram
         </h1>
-        <button
+        <StatefulButton
+          status={status}
+          onReset={() => setStatus("idle")}
           onClick={handleLogout}
-          className="p-2 text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+          variant="ghost"
+          size="icon"
+          className="p-2 text-red-400 hover:bg-zinc-800 rounded-lg transition-colors border-0"
           title="Sign Out"
         >
           <LogOut size={20} />
-        </button>
+        </StatefulButton>
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
@@ -126,13 +142,19 @@ const Sidebar = () => {
         </div>
 
         <div className="pt-4 border-t border-zinc-800">
-          <button
+          <StatefulButton
+            status={status}
+            onReset={() => setStatus("idle")}
             onClick={handleLogout}
-            className="w-full px-4 py-3 rounded-lg text-red-400 hover:bg-zinc-800 transition text-sm font-medium flex items-center gap-4 justify-center lg:justify-start cursor-pointer"
+            variant="ghost"
+            loadingText="Signing Out..."
+            successText="Signed Out!"
+            errorText="Error"
+            className="w-full px-4 py-3 rounded-lg text-red-400 hover:bg-zinc-800 transition text-sm font-medium flex items-center gap-4 justify-center lg:justify-start cursor-pointer border-0"
           >
             <LogOut size={22} className="shrink-0" />
             <span className="hidden lg:inline">Sign Out</span>
-          </button>
+          </StatefulButton>
         </div>
       </div>
     </>

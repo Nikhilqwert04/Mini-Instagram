@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { StatefulButton } from "@/components/ui/stateful-button";
 const CreatePost = () => {
   const [image, setimage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [isDragON, setisDragON] = useState(false);
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("idle");
 
 
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ const CreatePost = () => {
       return;
     }
 
-    setLoading(true);
+    setStatus("loading");
 
     const formData = new FormData();
     formData.append("image", imageFile);
@@ -61,11 +61,11 @@ const CreatePost = () => {
         withCredentials: true,
       });
 
-      navigate("/dashboard/my-posts");
+      setStatus("success");
+      setTimeout(() => navigate("/dashboard/my-posts"), 800);
     } catch (error) {
       console.error("Create post error:", error);
-    } finally {
-      setLoading(false);
+      setStatus("error");
     }
   };
 
@@ -152,20 +152,18 @@ const CreatePost = () => {
               </div>
 
               {/* Submit Button */}
-              <button
+              <StatefulButton
                 type="submit"
-                disabled={loading}
-                className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-lg shrink-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                status={status}
+                onReset={() => setStatus("idle")}
+                disabled={status !== "idle"}
+                loadingText="Creating Post..."
+                successText="Shared!"
+                errorText="Error"
+                className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-lg shrink-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-0"
               >
-                 {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>Creating Post...</span>
-                  </div>
-                ) : (
-                  "Share Post"
-                )}
-              </button>
+                Share Post
+              </StatefulButton>
             </div>
           </form>
         </div>

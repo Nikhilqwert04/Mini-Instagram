@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { StatefulButton } from "@/components/ui/stateful-button";
 const AdminUsers = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState({}); // Track loading state of block/unblock actions for specific users
+  const [actionStatus, setActionStatus] = useState({}); // Track status of block/unblock actions
   const [users, setUsers] = useState([]);
 
   // Fetch users from API on mount
@@ -40,7 +40,7 @@ const AdminUsers = () => {
   // Toggle user block/unblock state
   const handleToggleBlock = async (user) => {
     const userId = user._id;
-    setActionLoading((prev) => ({ ...prev, [userId]: true }));
+    setActionStatus((prev) => ({ ...prev, [userId]: "loading" }));
 
     const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
     const isCurrentlyBlocked = user.isBlocked;
@@ -61,11 +61,13 @@ const AdminUsers = () => {
             u._id === userId ? { ...u, isBlocked: !isCurrentlyBlocked } : u
           )
         );
+        setActionStatus((prev) => ({ ...prev, [userId]: "success" }));
+      } else {
+        setActionStatus((prev) => ({ ...prev, [userId]: "error" }));
       }
     } catch (error) {
       console.error("Error blocking/unblocking user:", error);
-    } finally {
-      setActionLoading((prev) => ({ ...prev, [userId]: false }));
+      setActionStatus((prev) => ({ ...prev, [userId]: "error" }));
     }
   };
 
@@ -175,26 +177,23 @@ const AdminUsers = () => {
                               View
                             </button>
 
-                            <button
+                            <StatefulButton
                               onClick={() => handleToggleBlock(user)}
-                              disabled={actionLoading[user._id]}
-                              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center ${
+                              status={actionStatus[user._id] || "idle"}
+                              onReset={() => setActionStatus((prev) => ({ ...prev, [user._id]: "idle" }))}
+                              disabled={actionStatus[user._id] && actionStatus[user._id] !== "idle"}
+                              loadingText={user.isBlocked ? "Unblocking..." : "Blocking..."}
+                              successText="Done!"
+                              errorText="Error"
+                              variant="ghost"
+                              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center border-0 ${
                                 user.isBlocked
-                                  ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30"
-                                  : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30"
+                                  ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border-emerald-500/30"
+                                  : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border-red-500/30"
                               } disabled:opacity-50 disabled:cursor-not-allowed`}
                             >
-                              {actionLoading[user._id] ? (
-                                <svg className="animate-spin h-3.5 w-3.5 text-current" viewBox="0 0 24 24" fill="none">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
-                              ) : user.isBlocked ? (
-                                "Unblock"
-                              ) : (
-                                "Block"
-                              )}
-                            </button>
+                              {user.isBlocked ? "Unblock" : "Block"}
+                            </StatefulButton>
                           </div>
                         </td>
                       </tr>
@@ -244,26 +243,23 @@ const AdminUsers = () => {
                           View
                         </button>
 
-                        <button
+                        <StatefulButton
                           onClick={() => handleToggleBlock(user)}
-                          disabled={actionLoading[user._id]}
-                          className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center ${
+                          status={actionStatus[user._id] || "idle"}
+                          onReset={() => setActionStatus((prev) => ({ ...prev, [user._id]: "idle" }))}
+                          disabled={actionStatus[user._id] && actionStatus[user._id] !== "idle"}
+                          loadingText={user.isBlocked ? "Unblocking..." : "Blocking..."}
+                          successText="Done!"
+                          errorText="Error"
+                          variant="ghost"
+                          className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition flex items-center gap-1 min-w-[76px] justify-center border-0 ${
                             user.isBlocked
                               ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30"
                               : "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30"
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
-                          {actionLoading[user._id] ? (
-                            <svg className="animate-spin h-3.5 w-3.5 text-current" viewBox="0 0 24 24" fill="none">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                          ) : user.isBlocked ? (
-                            "Unblock"
-                          ) : (
-                            "Block"
-                          )}
-                        </button>
+                          {user.isBlocked ? "Unblock" : "Block"}
+                        </StatefulButton>
                       </div>
                     </div>
                   </div>

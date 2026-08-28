@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { StatefulButton } from "@/components/ui/stateful-button";
 import { BarChart3, Users, LogOut } from "lucide-react";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
+  const [status, setStatus] = useState("idle");
 
   const linkStyle = ({ isActive }) =>
     `block px-4 py-3 rounded-lg transition ${
@@ -17,6 +20,7 @@ const AdminSidebar = () => {
 
   const handleLogout = async () => {
     const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+    setStatus("loading");
     try {
       await axios.post(
         "/api/v1/admin/admin-logout",
@@ -26,13 +30,22 @@ const AdminSidebar = () => {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
+      setStatus("success");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("adminToken");
+        navigate("/admin");
+      }, 800);
     } catch (err) {
       console.log("Logout error:", err);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("adminToken");
-      navigate("/admin");
+      setStatus("error");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("adminToken");
+        navigate("/admin");
+      }, 800);
     }
   };
 
@@ -44,13 +57,17 @@ const AdminSidebar = () => {
           <span className="bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">Mini Insta</span>
           <span className="text-[10px] bg-red-600/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-semibold">Admin</span>
         </h1>
-        <button
+        <StatefulButton
+          status={status}
+          onReset={() => setStatus("idle")}
           onClick={handleLogout}
-          className="p-2 text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+          variant="ghost"
+          size="icon"
+          className="p-2 text-red-400 hover:bg-zinc-800 rounded-lg transition-colors border-0"
           title="Sign Out"
         >
           <LogOut size={20} />
-        </button>
+        </StatefulButton>
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
@@ -93,13 +110,19 @@ const AdminSidebar = () => {
         </div>
 
         <div className="pt-4 border-t border-zinc-800">
-          <button
+          <StatefulButton
+            status={status}
+            onReset={() => setStatus("idle")}
             onClick={handleLogout}
-            className="w-full px-4 py-3 rounded-lg text-red-400 hover:bg-zinc-800 transition text-sm font-medium flex items-center gap-4 justify-center lg:justify-start cursor-pointer"
+            variant="ghost"
+            loadingText="Signing Out..."
+            successText="Signed Out!"
+            errorText="Error"
+            className="w-full px-4 py-3 rounded-lg text-red-400 hover:bg-zinc-800 transition text-sm font-medium flex items-center gap-4 justify-center lg:justify-start cursor-pointer border-0"
           >
             <LogOut size={22} className="shrink-0" />
             <span className="hidden lg:inline">Sign Out</span>
-          </button>
+          </StatefulButton>
         </div>
       </div>
     </>
