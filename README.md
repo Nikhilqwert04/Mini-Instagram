@@ -44,9 +44,9 @@ React SPA (Vite/Tailwind) ↔ Express API (Node.js) ↔ MongoDB
 ## ✨ Features
 
 ### 👤 User Features
-- **Secure Authentication**: Signup, signin, and secure token management (`accessToken`, `adminToken`).
+- **Secure Authentication**: Signup, signin, and secure token management (`accessToken`, `adminToken`) with stateful, animated feedback buttons.
 - **Dynamic Feed & Profiles**: Custom user profiles, banners, and post counts.
-- **Post Creation**: Drag-and-drop image uploader with captioning and visibility controls (Public/Private).
+- **Post Creation**: Drag-and-drop image uploader with captioning, visibility controls (Public/Private), and a stateful submit button.
 - **Real-Time Chat**: Socket.io-powered messaging with a responsive layout that toggles between chat list and active conversation on mobile.
 - **Responsive Dark-Themed UI**: Fully optimized for desktop, tablet, and mobile devices with dedicated top headers and bottom navigation bars.
 
@@ -54,23 +54,25 @@ React SPA (Vite/Tailwind) ↔ Express API (Node.js) ↔ MongoDB
 - **Admin Authentication Portal**: Dedicated secure login for platform administrators.
 - **User Management Dashboard**: 
   - Search users dynamically by username or full name.
-  - Moderate accounts with real-time block/unblock actions.
+  - Moderate accounts with real-time block/unblock actions powered by stateful feedback buttons.
   - View user post counts and profile details.
   - Responsive card-based list view for mobile and structured table view for desktop.
 - **Platform Analytics Overview**: High-level insights and statistics.
+
+### 🎨 UI/UX Enhancements
+- **Stateful Interactive Buttons**: Integrated a custom `StatefulButton` component across all major flows (auth, post creation, admin moderation, logouts) providing real-time visual feedback for `idle`, `loading`, `success`, and `error` states (including horizontal shake animations and auto-resets).
 
 ---
 ## 🛠️ Tech Stack
 
 | Layer | Technologies |
 |-------|--------------|
-| **Frontend** | React 19 + Vite, Tailwind CSS, React Router, Axios, Socket.io |
+| **Frontend** | React 19 + Vite, Tailwind CSS v4, Motion (Framer Motion), Shadcn UI, React Router, Axios, Socket.io |
 | **Backend** | Node.js, Express, MongoDB (Mongoose), ImageKit, Nodemailer |
 | **Security** | JWT, HttpOnly cookies, CORS, Socket.io middleware |
-| **Build Tools** | Vite, PM2 (production), Webpack (dev) |
+| **Build Tools** | Vite, `@tailwindcss/vite`, PM2 (production), Webpack (dev) |
 
 ---
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -80,10 +82,12 @@ React SPA (Vite/Tailwind) ↔ Express API (Node.js) ↔ MongoDB
 - SMTP credentials for email verification
 
 ### Installation
-```bash
+bash
 git clone https://github.com/Nikhilqwert04/Mini-Instagram.git
 cd Mini-Instagram
 
+
+---
 # Backend
 cd Backend
 npm run dev
