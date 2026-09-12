@@ -1,3 +1,4 @@
+import Redis from 'ioredis';
 import cookieParse from "cookie-parser";
 import http from "http";
 import { Server } from "socket.io";
@@ -48,10 +49,31 @@ app.use(
 
 app.use(express.json());
 
+
+
+
+// Just for Practice .... Starts form here
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
+
+app.get('/redis', async(req,res)=>{
+  const reply = await redis.ping();
+  res.json({redis:reply})
+})
+
+
+
+
+
+
+
+
+
+
 import postRouter from "./routes/post.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import rooms from "./routes/chatroom.routes.js";
+import asyncHandler from './utils/async-handler.js';
 
 app.use("/api/v1/health", async (_, res) => {
   return res.status(200).json({ message: "Server is upp and healthy" });
