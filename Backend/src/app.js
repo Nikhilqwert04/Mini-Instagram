@@ -50,9 +50,6 @@ app.use(
 app.use(express.json());
 
 
-
-
-// Just for Practice .... Starts form here
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
 
 const BANNER_KEY = "app:banner";
@@ -77,7 +74,6 @@ app.get('/banner/exists' , async(req,res)=>{
   res.json({exists:Boolean(exists)})
 })
 
-// ends here .......
 
 import postRouter from "./routes/post.routes.js";
 import authRouter from "./routes/auth.routes.js";
