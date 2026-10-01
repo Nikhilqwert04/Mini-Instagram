@@ -47,8 +47,7 @@ app.use(
   }),
 );
 
-app.use(express.json());
-
+app.use(express.json())
 import postRouter from "./routes/post.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
